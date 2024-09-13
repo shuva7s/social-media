@@ -1,6 +1,8 @@
-"use server"
+"use server";
+import { Types } from "mongoose";
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
+import { userInfo } from "./userInfo.action";
 
 export type CreateUserParams = {
   clerkId: string;
@@ -61,4 +63,36 @@ export async function deleteUser(clerkId: string) {
   } catch (error: any) {
     throw new Error("ERROR OCCURED AT DELETE_USER SERVER ACTION", error);
   }
+}
+
+export async function getUserObjectId() {
+  try {
+    await connectToDatabase();
+    const { userId, userName, userMail } = await userInfo();
+    if (!userId || !userName || !userMail)
+      throw new Error("User not found: searchd user based on clerks data");
+    const user = await User.findOne({
+      clerkId: userId,
+      email: userMail,
+      username: userName,
+    });
+    return user._id.toString();
+  } catch (error: any) {
+    throw new Error("ERROR OCCURED AT GET_USER SERVER ACTION", error);
+  }
+}
+
+export async function getUserDataFromObjectId(
+  objectId: Types.ObjectId
+): Promise<{ userImage: string; userName: string }> {
+  const user = await User.findById(objectId).select("photo username"); // Adjust fields as needed
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return {
+    userImage: user.photo,
+    userName: user.username,
+  };
 }
