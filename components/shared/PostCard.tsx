@@ -26,7 +26,7 @@ async function UserInfoById({
 }) {
   const { userImage, userName } = await getUserDataFromObjectId(creatorObjId);
   return (
-    <CardHeader>
+    <CardHeader className="px-4">
       <div className="flex gap-2 items-center flex-wrap">
         <Link href={`/${userName}`}>
           <Image
@@ -38,7 +38,9 @@ async function UserInfoById({
           />
         </Link>
         <Link href={`/${userName}`}>
-          <p className="font-semibold text-muted-foreground hover:text-primary hover:underline transition-all">@{userName}</p>
+          <p className="font-semibold text-muted-foreground hover:text-primary hover:underline transition-all">
+            @{userName}
+          </p>
         </Link>
       </div>
     </CardHeader>
@@ -51,7 +53,7 @@ const PostCard = ({ post }: any) => {
       <Suspense fallback={<PostCreatorLoad />}>
         <UserInfoById creatorObjId={post.creator} />
       </Suspense>
-      <CardContent>
+      <CardContent className="px-4">
         {post.postImage !== "" && (
           <Dialog>
             <DialogTrigger className="w-full">
@@ -60,6 +62,7 @@ const PostCard = ({ post }: any) => {
                 alt="image"
                 width={300}
                 height={300}
+                priority={true}
                 className="w-full"
               />
             </DialogTrigger>
@@ -79,7 +82,7 @@ const PostCard = ({ post }: any) => {
           </Dialog>
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="px-4">
         <p>Card Footer</p>
       </CardFooter>
     </Card>
