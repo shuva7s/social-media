@@ -1,5 +1,8 @@
+import Bottombar from "@/components/shared/Bottombar";
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
+import Sidebar from "@/components/shared/Sidebar";
+import { SignedIn } from "@clerk/nextjs";
 
 export default function RootLayout({
   children,
@@ -9,8 +12,16 @@ export default function RootLayout({
   return (
     <>
       <Navbar />
-      {children}
-      <Footer />
+      <div className="flex gap-2 relative mx-2">
+        <SignedIn>
+          <Sidebar />
+        </SignedIn>
+        <div className="w-full flex-1">
+          {children}
+          {/* <Bottombar /> */}
+          <Footer />
+        </div>
+      </div>
     </>
   );
 }

@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
+import { handleError } from "../utils";
 
 export type CreateUserParams = {
   clerkId: string;
@@ -95,4 +96,24 @@ export async function getUserDataFromObjectId(
     userImage: user.photo,
     userName: user.username,
   };
+}
+export async function getUserDataFromUserName(un: string) {
+  try {
+    await connectToDatabase();
+    const { userName } = await userInfo();
+
+    if (!userName) return { message: "invIdClerk" };
+
+    const user = await User.findOne({ username: userName });
+    if (!user) return { message: "unf" };
+
+    return {
+      message: "success",
+      usersProfile: userName === un,
+      userData: user,
+    };
+  } catch (error) {
+    handleError(error);
+    return { message: "swr" };
+  }
 }

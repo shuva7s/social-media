@@ -1,5 +1,7 @@
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { ModeToggle } from "../theme/ModeToggle";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
   const userButtonAppearance = {
@@ -8,14 +10,20 @@ const Navbar = () => {
     },
   };
   return (
-    <header className="shadow-sm">
-      <nav className="flex flex-row justify-between items-center py-4">
+    <header className="sticky top-0 z-50 bg-accent/80 rounded-b-2xl px-6 bg-blur">
+      <nav className="flex flex-row justify-between items-center navbar">
         <p>LOGO</p>
         <div className="flex flex-row gap-3">
-          <ModeToggle />
           <SignedIn>
-            <UserButton appearance={userButtonAppearance} />
+            <Button asChild>
+              <Link href="/create-post">Create post</Link>
+            </Button>
           </SignedIn>
+          <SignedOut>
+            <Button>
+              <SignInButton>Sign In</SignInButton>
+            </Button>
+          </SignedOut>
         </div>
       </nav>
     </header>

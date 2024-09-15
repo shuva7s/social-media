@@ -39,7 +39,7 @@ export default function TopLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <div className="wrapper">{children}</div>
             <Toaster />
           </ThemeProvider>
         </body>

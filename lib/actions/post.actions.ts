@@ -6,6 +6,7 @@ import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
 import { userInfo } from "./userInfo.action";
+import { revalidatePath } from "next/cache";
 
 type CreatePostParams = {
   message: string;
@@ -61,18 +62,129 @@ export async function createPost({
   }
 }
 
-export async function getLatestPosts() {
+export async function getPosts(type: "normal" | "users") {
+  try {
+    await connectToDatabase();
+    if (type === "users") {
+      const { userId, userName, userMail } = await userInfo();
+
+      if (!userId || !userMail || !userName) {
+        throw new Error("ids-not-found");
+      }
+
+      const user = await User.findOne({
+        email: userMail,
+        username: userName,
+        clerkId: userId,
+      });
+
+      if (!user) {
+        throw new Error("user-not-found");
+      }
+
+      const posts = await Post.find({
+        creator: user._id,
+      })
+        .sort({ createdAt: -1 })
+        .limit(10);
+
+      return posts;
+    } else {
+      const posts = await Post.find().sort({ createdAt: -1 }).limit(10);
+      return posts;
+    }
+  } catch (error) {
+    console.error("Error fetching latest posts:", error);
+    throw new Error("Unable to fetch latest posts");
+  }
+}
+
+export async function getPostLikeStatus(
+  postId: Types.ObjectId
+): Promise<boolean> {
   try {
     // Connect to the database
     await connectToDatabase();
 
-    // Fetch the latest 10 posts, sorting by createdAt in descending order
-    const latestPosts = await Post.find()
-      .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-      .limit(10) // Limit to 10 posts// Optional: Populate creator details
-    return latestPosts;
+    const { userId, userName, userMail } = await userInfo();
+
+    if (!userId || !userMail || !userName) {
+      throw new Error("ids-not-found");
+    }
+
+    const user = await User.findOne({
+      email: userMail,
+      username: userName,
+      clerkId: userId,
+    });
+
+    if (!user) {
+      throw new Error("user-not-found");
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      throw new Error("post-not-found");
+    }
+
+    const isLiked = post.likes.some(
+      (like: Types.ObjectId) => like.toString() === user._id.toString()
+    );
+
+    return isLiked;
   } catch (error) {
     console.error("Error fetching latest posts:", error);
     throw new Error("Unable to fetch latest posts");
+  }
+}
+
+export async function updateLikeStatus(postId: string, isLiked: boolean) {
+  try {
+    await connectToDatabase();
+
+    const { userId, userName, userMail } = await userInfo();
+
+    if (!userId || !userMail || !userName) {
+      throw new Error("ids-not-found");
+    }
+
+    const user = await User.findOne({
+      email: userMail,
+      username: userName,
+      clerkId: userId,
+    });
+
+    if (!user) {
+      throw new Error("user-not-found");
+    }
+
+    const postObjectId = new Types.ObjectId(postId);
+
+    const post = await Post.findById(postObjectId);
+    if (!post) {
+      throw new Error("post-not-found");
+    }
+
+    const userObjectId = user._id;
+    const hasLiked = post.likes.some((id: Types.ObjectId) =>
+      id.equals(userObjectId)
+    );
+
+    if (isLiked && !hasLiked) {
+      post.likes.push(userObjectId);
+    } else if (!isLiked && hasLiked) {
+      post.likes = post.likes.filter(
+        (id: Types.ObjectId) => !id.equals(userObjectId)
+      );
+    }
+
+    await post.save();
+
+    revalidatePath(`/post/${postId}`);
+
+    return { success: true };
+  } catch (error: any) {
+    handleError(error);
+    return { success: false, error: error.message };
   }
 }

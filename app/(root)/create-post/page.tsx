@@ -10,8 +10,10 @@ async function RenderForm() {
 }
 export default function CreatePost() {
   return (
-    <main>
-      <h1 className="text-3xl font-semibold">Create Post</h1>
+    <main className="min-h-screen">
+      <h1 className="text-3xl font-semibold mt-4 text-foreground/60">
+        Create Post
+      </h1>
       <Suspense fallback={<PostFormLoad />}>
         <RenderForm />
       </Suspense>

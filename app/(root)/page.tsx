@@ -7,22 +7,16 @@ import {
   SignInButton,
   SignOutButton,
 } from "@clerk/nextjs";
-import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function rootPage() {
   return (
-    <main>
+    <main className="min-h-screen">
       <SignedIn>
         <section>
-          <div className="flex justify-between items-center flex-wrap">
-            <h2 className="text-3xl font-semibold">Posts</h2>
-            <Button asChild>
-              <Link href={"/create-post"}>Create post</Link>
-            </Button>
-          </div>
+          <h2 className="text-3xl font-semibold my-4 text-foreground/60">Posts</h2>
           <Suspense fallback={<PostsContainerLoad />}>
-            <PostsContainer userObjectId={null} />
+            <PostsContainer type="normal" />
           </Suspense>
         </section>
       </SignedIn>

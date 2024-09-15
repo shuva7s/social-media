@@ -53,7 +53,7 @@ export function FileUploader({
   });
 
   return (
-    <div {...getRootProps()} className="flex border justify-center py-8">
+    <div {...getRootProps()} className="flex border justify-center py-8 rounded-2xl">
       <input {...getInputProps()} className="cursor-pointer" />
 
       {imageUrl ? (

@@ -11,7 +11,14 @@ const ZoomableImageDialog = ({
   altText,
 }: ZoomableImageDialogProps) => {
   return (
-    <TransformWrapper initialScale={1} minScale={1} maxScale={3} disablePadding>
+    <TransformWrapper
+      initialScale={1}
+      minScale={1}
+      maxScale={3}
+      disablePadding
+      wheel={{ step: 0.2 }}
+      pinch={{ step: 5}}
+    >
       {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
         <div className="relative h-full">
           <TransformComponent>
@@ -28,4 +35,3 @@ const ZoomableImageDialog = ({
 };
 
 export default ZoomableImageDialog;
-

@@ -123,9 +123,8 @@ const CreatePostForm = ({
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Message</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your message" {...field} />
+                <Input className="rounded-2xl py-6" placeholder="Enter your message" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -137,7 +136,7 @@ const CreatePostForm = ({
           type="submit"
           size="lg"
           disabled={!form.formState.isDirty || form.formState.isSubmitting}
-          className="button col-span-2 w-full"
+          className="button col-span-2 w-full py-6 rounded-2xl"
         >
           {isUploading
             ? "Uploading image..."
