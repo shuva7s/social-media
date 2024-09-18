@@ -84,9 +84,11 @@ export async function getUserObjectId() {
 }
 
 export async function getUserDataFromObjectId(
-  objectId: Types.ObjectId
+  objectIdStr: string
 ): Promise<{ userImage: string; userName: string }> {
-  const user = await User.findById(objectId).select("photo username"); // Adjust fields as needed
+  const objectId = new Types.ObjectId(objectIdStr);
+
+  const user = await User.findById(objectId).select("photo username");
 
   if (!user) {
     throw new Error("User not found");
@@ -97,6 +99,7 @@ export async function getUserDataFromObjectId(
     userName: user.username,
   };
 }
+
 export async function getUserDataFromUserName(un: string) {
   try {
     await connectToDatabase();

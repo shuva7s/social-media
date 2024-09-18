@@ -39,10 +39,8 @@ export async function createPost({
       return { message: "user-not-found" };
     }
 
-    // Convert parentPost to ObjectId if it's a comment (i.e., not null)
     const parentPostId = parentPost ? new Types.ObjectId(parentPost) : null;
 
-    // Create the new post
     const savedPost = await Post.create({
       creator: user._id,
       postImage,
@@ -62,50 +60,10 @@ export async function createPost({
   }
 }
 
-export async function getPosts(type: "normal" | "users") {
+export async function getPosts(type: "normal" | "users", page = 1) {
   try {
     await connectToDatabase();
-    if (type === "users") {
-      const { userId, userName, userMail } = await userInfo();
-
-      if (!userId || !userMail || !userName) {
-        throw new Error("ids-not-found");
-      }
-
-      const user = await User.findOne({
-        email: userMail,
-        username: userName,
-        clerkId: userId,
-      });
-
-      if (!user) {
-        throw new Error("user-not-found");
-      }
-
-      const posts = await Post.find({
-        creator: user._id,
-      })
-        .sort({ createdAt: -1 })
-        .limit(10);
-
-      return posts;
-    } else {
-      const posts = await Post.find().sort({ createdAt: -1 }).limit(10);
-      return posts;
-    }
-  } catch (error) {
-    console.error("Error fetching latest posts:", error);
-    throw new Error("Unable to fetch latest posts");
-  }
-}
-
-export async function getPostLikeStatus(
-  postId: Types.ObjectId
-): Promise<boolean> {
-  try {
-    // Connect to the database
-    await connectToDatabase();
-
+    let limit = 6;
     const { userId, userName, userMail } = await userInfo();
 
     if (!userId || !userMail || !userName) {
@@ -122,19 +80,42 @@ export async function getPostLikeStatus(
       throw new Error("user-not-found");
     }
 
-    const post = await Post.findById(postId);
-    if (!post) {
-      throw new Error("post-not-found");
+    let query = {};
+    if (type === "users") {
+      query = { creator: user._id };
     }
 
-    const isLiked = post.likes.some(
-      (like: Types.ObjectId) => like.toString() === user._id.toString()
+    const posts = await Post.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("creator", "username photo")
+      .lean();
+
+    // Add like status to each post
+    const postsWithLikeStatus = await Promise.all(
+      posts.map(async (post) => {
+        const isLiked = post.likes.some(
+          (like: Types.ObjectId) => like.toString() === user._id.toString()
+        );
+        return {
+          ...post,
+          isLiked,
+        };
+      })
     );
 
-    return isLiked;
+    const totalPosts = await Post.countDocuments(query);
+    const hasMore = totalPosts > page * limit;
+
+    return {
+      posts: JSON.parse(JSON.stringify(postsWithLikeStatus)),
+      postsWithLikeStatus: JSON.parse(JSON.stringify(postsWithLikeStatus)),
+      hasMore,
+    };
   } catch (error) {
-    console.error("Error fetching latest posts:", error);
-    throw new Error("Unable to fetch latest posts");
+    console.error("Error fetching posts:", error);
+    throw new Error("Unable to fetch posts");
   }
 }
 
@@ -185,6 +166,53 @@ export async function updateLikeStatus(postId: string, isLiked: boolean) {
     return { success: true };
   } catch (error: any) {
     handleError(error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getPostById(postId: string) {
+  try {
+    await connectToDatabase();
+    const { userId, userName, userMail } = await userInfo();
+
+    if (!userId || !userMail || !userName) {
+      return { success: false, error: "Error fetching you data" };
+    }
+
+    const user = await User.findOne({
+      email: userMail,
+      username: userName,
+      clerkId: userId,
+    });
+
+    if (!user) {
+      return { success: false, error: "User not found" };
+    }
+
+    // Convert postId to ObjectId
+    const postObjectId = new Types.ObjectId(postId);
+
+    // Fetch the single post by postId
+    const post = await Post.findById(postObjectId).populate(
+      "creator",
+      "username photo"
+    );
+
+    if (!post) {
+      return { success: false, error: "Post not found" };
+    }
+
+    // Check if the current user liked the post
+    const isLiked = post.likes.some(
+      (like: Types.ObjectId) => like.toString() === user._id.toString()
+    );
+
+    return {
+      success: true,
+      postData: JSON.parse(JSON.stringify(post)),
+      isLiked,
+    };
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 }

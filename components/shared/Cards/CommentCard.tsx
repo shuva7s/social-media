@@ -7,14 +7,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText } from "lucide-react";
 import PostCreatorLoad from "@/components/loaders/PostCreatorLoad";
-import { PostAdditionalInfo, UserInfoById } from "./PostCard";
+// import { PostAdditionalInfo, UserInfoById } from "./PostCard";
 
 const CommentCard = ({ post }: any) => {
   return (
     <Card className="break-inside-avoid">
-      <Suspense fallback={<PostCreatorLoad />}>
+      {/* <Suspense fallback={<PostCreatorLoad />}>
         <UserInfoById creatorObjId={post.creator} />
-      </Suspense>
+      </Suspense> */}
       <CardContent className="px-4 py-0">
         {post.messase !== "" && (
           <p className="my-2 truncate ...">{post.message}</p>
@@ -51,7 +51,7 @@ const CommentCard = ({ post }: any) => {
       <CardFooter className="px-4 py-0">
         <div className="flex flow-row gap-3 p-0 pb-2">
           <Suspense fallback={<Skeleton className="h-10 w-10 rounded-full" />}>
-            <PostAdditionalInfo postObjId={post._id} />
+            {/* <PostAdditionalInfo postObjId={post._id} /> */}
           </Suspense>
 
           <Button variant="ghost" className="gap-2 px-2 opacity-55">

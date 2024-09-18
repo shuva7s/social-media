@@ -1,5 +1,25 @@
 import { Schema, Types, model, models } from "mongoose";
 
+export interface Creator {
+  _id: string;
+  username: string;
+  photo: string;
+}
+
+export interface PostData {
+  _id: string;
+  creator: Creator;
+  postImage: string;
+  message: string;
+  likes: string[];
+  comments: any[];
+  parentPost: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  isLiked: boolean;
+}
+
 export interface IPost extends Document {
   _id: Types.ObjectId;
 
@@ -15,6 +35,18 @@ export interface IPost extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type postDataTypeFrontEnd = {
+  _id: string;
+  creator: string;
+  postImage: string;
+  message: string;
+  likes: string[];
+  comments: string[];
+  parentPost: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 const PostSchema = new Schema({
   creator: { type: Schema.Types.ObjectId, ref: "User" },

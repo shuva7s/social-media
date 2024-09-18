@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, TransitionStartFunction } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { updateLikeStatus } from "@/lib/actions/post.actions";
-import { Types } from "mongoose";
 import { Button } from "../ui/button";
 
 interface LikeProps {
@@ -21,7 +20,6 @@ const Like = ({ isliked, postId }: LikeProps) => {
     setIsProcessing(true);
 
     try {
-      // Call the server action instead of an API route
       const response = await updateLikeStatus(postId, newLikeStatus);
 
       if (!response.success) {

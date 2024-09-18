@@ -108,8 +108,4 @@ body {
     top: 4.5rem;
   }
 
-  .PostDetailCardPos {
-    height: calc(100vh - 5rem);
-    top: 4.5rem;
-  }
 }
