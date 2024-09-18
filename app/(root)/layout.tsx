@@ -16,11 +16,7 @@ export default function RootLayout({
         <SignedIn>
           <Sidebar />
         </SignedIn>
-        <div className="w-full flex-1">
-          {children}
-          {/* <Bottombar /> */}
-          <Footer />
-        </div>
+        {children}
       </div>
     </>
   );

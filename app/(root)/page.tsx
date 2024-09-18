@@ -11,13 +11,16 @@ import { Suspense } from "react";
 
 export default async function rootPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex-1">
       <SignedIn>
         <section>
-          <h2 className="text-3xl font-semibold my-4 text-foreground/60">Posts</h2>
+          <h2 className="text-3xl font-semibold my-4 text-foreground/60">
+            Posts
+          </h2>
           <Suspense fallback={<PostsContainerLoad />}>
             <PostsContainer type="normal" />
           </Suspense>
+
         </section>
       </SignedIn>
       <SignedOut>
