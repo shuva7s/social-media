@@ -14,8 +14,8 @@ import { PostData } from "@/lib/database/models/post.model";
 
 const PostCard = ({ post }: { post: PostData }) => {
   return (
-    <Card className="p-3 bg-accent/40 break-inside-avoid">
-      <CardHeader className="p-0 flex flex-row gap-3 flex-wrap">
+    <Card className="bg-accent/40 break-inside-avoid">
+      <CardHeader className="p-3 flex flex-row gap-3 flex-wrap">
         <Link href={`/${post.creator.username}`}>
           <Image
             src={post.creator.photo}
@@ -31,7 +31,7 @@ const PostCard = ({ post }: { post: PostData }) => {
           </p>
         </Link>
       </CardHeader>
-      <CardContent className="p-0 mt-2">
+      <CardContent className="px-3 py-0">
         <Link
           href={`${post.creator.username}/post/${post._id}`}
           className="flex flex-col"
@@ -52,7 +52,7 @@ const PostCard = ({ post }: { post: PostData }) => {
         </Link>
       </CardContent>
       <SignedIn>
-        <CardFooter className="p-0">
+        <CardFooter className="px-3 py-2">
           <div className="flex flow-row gap-3">
             <Like isliked={post.isLiked} postId={post._id} />
             <Button variant="ghost" className="gap-2 px-2 opacity-55">
