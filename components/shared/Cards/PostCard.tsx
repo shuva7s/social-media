@@ -5,7 +5,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import Image from "next/image";
-import ZoomableImageDialog from "../ZoomImage";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
 import { MessageSquareText } from "lucide-react";
@@ -15,7 +14,7 @@ import { PostData } from "@/lib/database/models/post.model";
 
 const PostCard = ({ post }: { post: PostData }) => {
   return (
-    <Card className="p-3 bg-accent/40">
+    <Card className="p-3 bg-accent/40 break-inside-avoid">
       <CardHeader className="p-0 flex flex-row gap-3 flex-wrap">
         <Link href={`/${post.creator.username}`}>
           <Image
@@ -38,7 +37,7 @@ const PostCard = ({ post }: { post: PostData }) => {
           className="flex flex-col"
         >
           {post.message !== "" && (
-            <p className="my-2 truncate ...">{post.message}</p>
+            <p>{post.message}</p>
           )}
           {post.postImage !== "" && (
             <Image
@@ -67,4 +66,3 @@ const PostCard = ({ post }: { post: PostData }) => {
 };
 
 export default PostCard;
-

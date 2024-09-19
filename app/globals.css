@@ -91,13 +91,10 @@ body {
     @apply flex justify-between items-center;
   }
   .wrapper {
-    @apply mx-auto max-w-[1800px];
+    @apply mx-auto max-w-[1600px];
   }
   .navbar {
     min-height: 4rem;
-  }
-  .sidebar {
-    @apply flex flex-col w-64 min-h-screen;
   }
   .bg-blur {
     backdrop-filter: blur(2rem);
@@ -107,5 +104,4 @@ body {
     height: calc(100vh - 4.5rem);
     top: 4.5rem;
   }
-
 }

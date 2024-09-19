@@ -20,7 +20,6 @@ export default async function rootPage() {
           <Suspense fallback={<PostsContainerLoad />}>
             <PostsContainer type="normal" />
           </Suspense>
-
         </section>
       </SignedIn>
       <SignedOut>

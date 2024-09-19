@@ -15,7 +15,7 @@ async function UserDataRender({ userName }: { userName: string }) {
 export default function UserPage({ params }: { params: { userName: string } }) {
   const userName = params.userName;
   return (
-    <main className="min-h-screen mt-2">
+    <main className="min-h-screen flex-1">
       <Suspense fallback={<UserProfileCardLoad />}>
         <UserDataRender userName={userName} />
       </Suspense>

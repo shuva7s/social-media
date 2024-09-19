@@ -7,7 +7,7 @@ export default function SpecificPost({
   params: { postId: string };
 }) {
   return (
-    <main className="mt-2 flex-1">
+    <main className="flex-1">
       <div className="w-full flex flex-col md:flex-row gap-2">
         <PostDetailCard postIdString={params.postId} />
         <section className="w-full post-detail-card min-h-[50vh]">

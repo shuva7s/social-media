@@ -23,7 +23,7 @@ const Loadmore = () => {
         setPage((prevPage) => prevPage + 1);
       });
     }
-  }, [inView]);
+  }, [inView, posts, page]);
 
   return (
     <>
