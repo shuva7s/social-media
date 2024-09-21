@@ -11,6 +11,7 @@ import { MessageSquareText } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SignedIn } from "@clerk/nextjs";
 import { PostData } from "@/lib/database/models/post.model";
+import CommentButton from "@/components/action-buttons/CommentButton";
 
 const PostCard = ({ post }: { post: PostData }) => {
   return (
@@ -36,9 +37,7 @@ const PostCard = ({ post }: { post: PostData }) => {
           href={`${post.creator.username}/post/${post._id}`}
           className="flex flex-col"
         >
-          {post.message !== "" && (
-            <p>{post.message}</p>
-          )}
+          {post.message !== "" && <p>{post.message}</p>}
           {post.postImage !== "" && (
             <Image
               src={post.postImage}
@@ -55,9 +54,7 @@ const PostCard = ({ post }: { post: PostData }) => {
         <CardFooter className="px-3 py-2">
           <div className="flex flow-row gap-3">
             <Like isliked={post.isLiked} postId={post._id} />
-            <Button variant="ghost" className="gap-2 px-2 opacity-55">
-              <MessageSquareText /> comment
-            </Button>
+            <CommentButton parentPostId={post._id} type="create"/>
           </div>
         </CardFooter>
       </SignedIn>

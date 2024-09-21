@@ -25,6 +25,7 @@ import PostDatailCardLoad from "@/components/loaders/PostDatailCardLoad";
 async function PostRenderer({ postIdString }: { postIdString: string }) {
   const { success, postData, isLiked, error } = await getPostById(postIdString);
   if (success) {
+    console.dir(postData);
     return (
       <Card className="flex flex-col justify-between dark:bg-accent">
         <CardHeader className="px-4 py-3 bg-accent">

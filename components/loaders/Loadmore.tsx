@@ -11,7 +11,7 @@ const Loadmore = () => {
   const { ref, inView } = useInView({
     rootMargin: "100px",
   });
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<PostData[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(2);
 
@@ -27,9 +27,8 @@ const Loadmore = () => {
 
   return (
     <>
-      {posts.map((post: PostData) => (
-        <PostCard key={post._id} post={post} />
-      ))}
+      {posts.length > 0 &&
+        posts.map((post: PostData) => <PostCard key={post._id} post={post} />)}
       {hasMore && (
         <div
           ref={ref}

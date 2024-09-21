@@ -1,5 +1,8 @@
+import CommentButton from "@/components/action-buttons/CommentButton";
 import CommentCard from "@/components/shared/Cards/CommentCard";
 import PostDetailCard from "@/components/shared/Cards/PostDetailCard";
+import CommentsContainer from "@/components/shared/CommentsContainer";
+import { Suspense } from "react";
 
 export default function SpecificPost({
   params,
@@ -11,61 +14,13 @@ export default function SpecificPost({
       <div className="w-full flex flex-col md:flex-row gap-2">
         <PostDetailCard postIdString={params.postId} />
         <section className="w-full post-detail-card min-h-[50vh]">
-          <h3 className="text-2xl font-bold my-3">Comments</h3>
-          <div className="flex flex-col gap-2">
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
-            <div className="px-2 py-8 bg-accent/60 rounded-md">Comment</div>
+          <div className="flex justify-between items-center">
+            <h3 className="text-2xl font-bold my-3">Comments</h3>
+            <CommentButton parentPostId={params.postId} type="create" />
           </div>
+          <Suspense fallback={<p>Loading comments...</p>}>
+            <CommentsContainer postIdString={params.postId} />
+          </Suspense>
         </section>
       </div>
     </main>

@@ -6,7 +6,6 @@ import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
 import { userInfo } from "./userInfo.action";
-import { revalidatePath } from "next/cache";
 
 type CreatePostParams = {
   message: string;
@@ -80,9 +79,12 @@ export async function getPosts(type: "normal" | "users", page = 1) {
       throw new Error("user-not-found");
     }
 
-    let query = {};
+    let query: { parentPost: null; creator?: Types.ObjectId } = {
+      parentPost: null,
+    };
+
     if (type === "users") {
-      query = { creator: user._id };
+      query.creator = user._id; // Add creator condition only if type is "users"
     }
 
     const posts = await Post.find(query)
@@ -114,8 +116,62 @@ export async function getPosts(type: "normal" | "users", page = 1) {
       hasMore,
     };
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    handleError(error);
     throw new Error("Unable to fetch posts");
+  }
+}
+
+export async function getComments(postId: string, page = 1, limit = 6) {
+  try {
+    await connectToDatabase();
+    const { userId, userName, userMail } = await userInfo();
+
+    if (!userId || !userMail || !userName) {
+      throw new Error("ids-not-found");
+    }
+
+    const user = await User.findOne({
+      email: userMail,
+      username: userName,
+      clerkId: userId,
+    });
+
+    if (!user) {
+      throw new Error("user-not-found");
+    }
+
+    // Fetch comments where parentPost matches the provided postId with pagination
+    const comments = await Post.find({ parentPost: postId })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("creator", "username photo")
+      .lean();
+
+    // Add like status to each comment
+    const commentsWithLikeStatus = await Promise.all(
+      comments.map(async (comment) => {
+        const isLiked = comment.likes.some(
+          (like: Types.ObjectId) => like.toString() === user._id.toString()
+        );
+        return {
+          ...comment,
+          isLiked,
+        };
+      })
+    );
+
+    // Get the total count of comments for pagination
+    const totalComments = await Post.countDocuments({ parentPost: postId });
+    const hasMore = totalComments > page * limit;
+
+    return {
+      comments: JSON.parse(JSON.stringify(commentsWithLikeStatus)),
+      hasMore,
+    };
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw new Error("Unable to fetch comments");
   }
 }
 
@@ -160,8 +216,6 @@ export async function updateLikeStatus(postId: string, isLiked: boolean) {
     }
 
     await post.save();
-
-    revalidatePath(`/post/${postId}`);
 
     return { success: true };
   } catch (error: any) {
