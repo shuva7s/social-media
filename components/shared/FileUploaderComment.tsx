@@ -53,13 +53,14 @@ export function FileUploaderComment({
     accept: generateClientDropzoneAccept(["image/*"]),
   });
 
-  if (imageUrl) {
-    return (
-      <div
-        {...getRootProps()}
-        className="w-full border p-4 rounded-2xl"
-      >
-        <input {...getInputProps()} className="cursor-pointer" />
+  return (
+    <div
+      {...getRootProps()}
+      className="flex justify-center py-8 rounded-2xl"
+    >
+      <input {...getInputProps()} className="cursor-pointer" />
+
+      {imageUrl ? (
         <div className="flex flex-1 w-full max-h-[400px]">
           <Image
             src={imageUrl}
@@ -69,16 +70,11 @@ export function FileUploaderComment({
             className="w-full object-contain"
           />
         </div>
-      </div>
-    );
-  } else {
-    return (
-      <div {...getRootProps()}>
-        <input {...getInputProps()} className="cursor-pointer" />
-        <Button variant="outline" size="icon">
-          <Paperclip />
-        </Button>
-      </div>
-    );
-  }
+      ) : (
+        <div className="p-10 border-2 border-dotted rounded-full">
+          <Paperclip className="opacity-50 hover:opacity-100 transition-all"/>
+        </div>
+      )}
+    </div>
+  );
 }

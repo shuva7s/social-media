@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Loader, MessageSquareText, Send } from "lucide-react";
+import { Loader, MessageSquareText, Send, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,14 +77,20 @@ const CommentButton = ({
         parentPost: parentPostId,
       });
 
-      form.reset(); // Reset the form after submission
-
       if (res.message === "success") {
-        router.refresh();
+        // Reset the form and the file input
+        form.reset(); // Reset the form after submission
+        setFiles([]); // Clear the files array
+        form.setValue("commentImage", ""); // Reset the commentImage field
+
+        router.refresh(); // Refresh the page
+
         toast({
           title: "Comment added",
           description: "Your comment has been added successfully",
         });
+
+        // return <DialogClose />;
       } else if (res.message === "swr") {
         toast({
           title: "Something went wrong",
@@ -122,7 +128,7 @@ const CommentButton = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex flex-row gap-2 flex-wrap">
+            <div className="flex flex-col gap-2">
               <FormField
                 control={form.control}
                 name="commentImage"
@@ -131,7 +137,7 @@ const CommentButton = ({
                     <FormControl className="h-72">
                       <FileUploaderComment
                         onFieldChange={field.onChange}
-                        imageUrl={field.value || ""} // Use image URL or empty string
+                        imageUrl={field.value || ""}
                         setFiles={setFiles}
                       />
                     </FormControl>
@@ -139,29 +145,37 @@ const CommentButton = ({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="comment"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormControl>
-                      <Input placeholder="Type your comment..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <DialogClose> */}
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={
-                    !form.formState.isDirty || form.formState.isSubmitting
-                  }
-                >
-                  {isUploading ? <Loader className="animate-spin" /> : <Send />}
-                </Button>
-              {/* </DialogClose> */}
+              <div className="flex gap-2 flex-row flex-wrap">
+                <FormField
+                  control={form.control}
+                  name="comment"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input placeholder="Type your comment..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogClose>
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={
+                      !form.formState.isDirty || form.formState.isSubmitting
+                    }
+                  >
+                    {isUploading ? (
+                      <Upload className="animate-pulse" />
+                    ) : form.formState.isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      <Send />
+                    )}
+                  </Button>
+                </DialogClose>
+              </div>
             </div>
           </form>
         </Form>

@@ -9,7 +9,6 @@ import Link from "next/link";
 import Like from "../../action-buttons/Like";
 import { MessageSquareText } from "lucide-react";
 import { Button } from "../../ui/button";
-import { SignedIn } from "@clerk/nextjs";
 import { PostData } from "@/lib/database/models/post.model";
 import CommentButton from "@/components/action-buttons/CommentButton";
 
