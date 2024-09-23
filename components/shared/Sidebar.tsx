@@ -5,7 +5,7 @@ import SideBarButtons from "./SideBarButtons";
 const Sidebar = () => {
   const userButtonAppearance = {
     elements: {
-      userButtonAvatarBox: "w-8 h-8", // Custom width and height
+      userButtonAvatarBox: "w-8 h-8",
     },
   };
   return (

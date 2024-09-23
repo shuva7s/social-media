@@ -1,3 +1,4 @@
+import { Home, Users, PlusCircle, Settings, User } from "lucide-react";
 let navlinks = [
   {
     name: "Home",
@@ -13,4 +14,32 @@ let navlinks = [
   },
 ];
 
-export { navlinks };
+let bottomBarLinks = [
+  {
+    name: "Home",
+    href: "/",
+    icon: Home,
+  },
+  {
+    name: "Communities",
+    href: "/communities",
+    icon: Users,
+  },
+  {
+    name: "Create Post",
+    href: "/create-post",
+    icon: PlusCircle,
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
+];
+
+export { navlinks, bottomBarLinks };

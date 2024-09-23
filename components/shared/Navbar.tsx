@@ -11,10 +11,9 @@ const Navbar = () => {
     },
   };
   return (
-    <header className="sticky top-0 z-50 bg-accent/80 rounded-b-2xl px-6 bg-blur">
+    <header className="hidden lg:block sticky top-0 z-50 bg-accent/80 rounded-b-2xl px-6 bg-blur">
       <nav className="flex flex-row justify-between items-center navbar">
         <p>LOGO</p>
-
         <SignedIn>
           <CreatePostRedirect />
         </SignedIn>
