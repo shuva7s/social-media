@@ -12,13 +12,16 @@ const SideBarButtons = () => {
         <li key={link.name}>
           <Button
             asChild
-            className={`w-full justify-start rounded-2xl ${
+            className={`w-full justify-start rounded-2xl text-muted-foreground ${
               pathName === link.href
-                ? "bg-primary py-7"
-                : "bg-accent py-6 text-accent-foreground hover:text-white"
+                ? "bg-primary py-7 text-white"
+                : "bg-transparent py-6 hover:text-white"
             }`}
           >
-            <Link href={link.href}>{link.name}</Link>
+            <Link href={link.href} className="flex gap-2">
+              <link.icon />
+              {link.name}
+            </Link>
           </Button>
         </li>
       ))}

@@ -15,7 +15,7 @@ import CommentButton from "@/components/action-buttons/CommentButton";
 
 const PostCard = ({ post }: { post: PostData }) => {
   return (
-    <Card className="bg-accent/40 break-inside-avoid">
+    <Card className="border-border/50 shadow-none hover:border-border bg-background dark:bg-accent/30 break-inside-avoid">
       <CardHeader className="p-3 flex flex-row gap-3 flex-wrap">
         <Link href={`/${post.creator.username}`}>
           <Image
@@ -32,12 +32,12 @@ const PostCard = ({ post }: { post: PostData }) => {
           </p>
         </Link>
       </CardHeader>
-      <CardContent className="px-3 py-0">
+      <CardContent className="px-2 py-0">
         <Link
           href={`${post.creator.username}/post/${post._id}`}
           className="flex flex-col"
         >
-          {post.message !== "" && <p>{post.message}</p>}
+          {post.message !== "" && <p className="px-1">{post.message}</p>}
           {post.postImage !== "" && (
             <Image
               src={post.postImage}

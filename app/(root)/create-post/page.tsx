@@ -1,10 +1,9 @@
 import CreatePostForm from "@/components/forms/CreatePostForm";
 import { PostFormLoad } from "@/components/loaders/PostFormLoad";
-import { getUserObjectId } from "@/lib/actions/user.actions";
 import { Suspense } from "react";
 
 async function RenderForm() {
-  let creatorObjId = await getUserObjectId();
+  // let creatorObjId = await getUserObjectId();
   return <CreatePostForm parentPost={null} />;
   // <CreatePostForm creatorObjId={creatorObjId} parentPost={null} />;
 }

@@ -14,9 +14,9 @@ export default async function rootPage() {
     <main className="min-h-screen flex-1">
       <SignedIn>
         <section>
-          <h2 className="text-3xl font-semibold my-4 text-foreground/60">
+          {/* <h2 className="text-3xl font-semibold mb-4 text-foreground/60">
             Posts
-          </h2>
+          </h2> */}
           <Suspense fallback={<PostsContainerLoad />}>
             <PostsContainer type="normal" />
           </Suspense>

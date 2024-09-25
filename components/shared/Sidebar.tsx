@@ -10,7 +10,7 @@ const Sidebar = () => {
   };
   return (
     <aside className="w-64 min-h-screen hidden lg:flex-shrink-0 lg:flex lg:flex-col">
-      <nav className="sidebar-content rounded-t-2xl bg-accent/50 flex flex-col justify-between gap-2 p-2 ">
+      <nav className="sidebar-content rounded-t-2xl flex flex-col justify-between gap-2 px-2">
         <SideBarButtons />
         <div className="w-full flex flex-row gap-2 opacity-30 hover:opacity-100 transition-all">
           <ModeToggle />

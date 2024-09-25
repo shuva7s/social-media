@@ -1,6 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { ModeToggle } from "../theme/ModeToggle";
-import Link from "next/link";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import CreatePostRedirect from "../action-buttons/CreatePostRedirect";
 
@@ -11,7 +9,7 @@ const Navbar = () => {
     },
   };
   return (
-    <header className="hidden lg:block sticky top-0 z-50 bg-accent/80 rounded-b-2xl px-6 bg-blur">
+    <header className="hidden lg:block sticky top-0 z-50 bg-background rounded-b-2xl px-6 border-b">
       <nav className="flex flex-row justify-between items-center navbar">
         <p>LOGO</p>
         <SignedIn>

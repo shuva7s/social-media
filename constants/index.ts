@@ -2,14 +2,27 @@ import { Home, Users, PlusCircle, Settings, User } from "lucide-react";
 let navlinks = [
   {
     name: "Home",
+    icon: Home,
     href: "/",
   },
   {
     name: "Create Post",
+    icon: PlusCircle,
     href: "/create-post",
   },
   {
+    name: "Communities",
+    icon: Users,
+    href: "/communities",
+  },
+  {
+    name: "Profile",
+    icon: User,
+    href: "/profile",
+  },
+  {
     name: "Settings",
+    icon: Settings,
     href: "/settings",
   },
 ];

@@ -68,6 +68,8 @@ const CreatePostForm = ({
       });
 
       form.reset();
+      setFiles([]);
+      form.setValue("postImage", "");
       router.push(`/`);
       router.refresh();
 
