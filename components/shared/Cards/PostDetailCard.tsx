@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import Like from "@/components/action-buttons/Like";
 import PostDatailCardLoad from "@/components/loaders/PostDatailCardLoad";
 import DeletePostButton from "@/components/action-buttons/DeletePostButton";
+import CommentButton from "@/components/action-buttons/CommentButton";
 
 async function PostRenderer({ postIdString }: { postIdString: string }) {
   const res = await getPostById(postIdString);
@@ -110,6 +111,7 @@ async function PostRenderer({ postIdString }: { postIdString: string }) {
           <CardFooter className="px-3 py-2 sticky bottom-0 z-10">
             <div className="flex flow-row gap-3 p-0">
               <Like isliked={res.isLiked} postId={res.postData._id} />
+              <CommentButton parentPostId={res.postData._id} type="create" />
             </div>
           </CardFooter>
         </SignedIn>

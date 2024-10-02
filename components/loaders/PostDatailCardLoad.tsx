@@ -16,9 +16,10 @@ const PostDatailCardLoad = () => {
         <Skeleton className="fl-center min-h-[35vh] my-2" />
       </CardContent>
 
-      <CardFooter className="px-3 py-2">
-        <div className="flex flow-row gap-3 p-0">
+      <CardFooter className="px-3 py-3">
+        <div className="flex flow-row gap-3">
           <Skeleton className="w-10 h-10 rounded-full" />
+          <Skeleton className="w-24 h-10 rounded-md" />
         </div>
       </CardFooter>
     </Card>
