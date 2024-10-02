@@ -11,7 +11,7 @@ export default function RootLayout({
   return (
     <>
       <Navbar />
-      <div className="flex justify-center flex-row gap-2 relative my-2 lg:my-4 mx-2 lg:mx-0">
+      <div className="flex justify-center flex-row gap-2 relative my-2 lg:my-4 mx-2 lg:mx-0 lg:mr-2">
         <SignedIn>
           <Sidebar />
         </SignedIn>

@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -12,9 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createPost } from "@/lib/actions/post.actions";
+import {
+  createPost,
+  getPostById,
+  updatePost,
+} from "@/lib/actions/post.actions";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileUploader } from "../shared/FileUploader";
 import { useToast } from "@/hooks/use-toast";
@@ -25,12 +29,14 @@ const formSchema = z.object({
   message: z.string(),
 });
 
-const CreatePostForm = ({
-  // creatorObjId,
-  parentPost,
+const PostForm = ({
+  type,
+  postId,
+  username,
 }: {
-  // creatorObjId: string;
-  parentPost: string | null;
+  type: "create" | "edit";
+  postId?: string;
+  username?: string;
 }) => {
   const [files, setFiles] = useState<File[]>([]); // Manage file state
   const [isUploading, setIsUploading] = useState(false); // Track image upload progress
@@ -47,6 +53,25 @@ const CreatePostForm = ({
     },
   });
 
+  // Fetch post data if type is "edit"
+  useEffect(() => {
+    if (type === "edit" && postId) {
+      (async () => {
+        try {
+          const response = await getPostById(postId);
+          if (response.success && response.postData) {
+            form.reset({
+              postImage: response.postData.postImage || "",
+              message: response.postData.message || "",
+            });
+          }
+        } catch (error) {
+          handleError(error);
+        }
+      })();
+    }
+  }, [type, postId, form]);
+
   // Submit handler
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (files.length > 0) {
@@ -62,36 +87,34 @@ const CreatePostForm = ({
     }
 
     try {
-      const res = await createPost({
-        ...values,
-        parentPost,
-      });
+      let res;
+      if (type === "create") {
+        res = await createPost({
+          ...values,
+          parentPost: null,
+        });
+      } else if (type === "edit" && postId && username) {
+        res = await updatePost({
+          postId,
+          username,
+          message: values.message,
+          postImage: values.postImage,
+        });
+      }
 
       form.reset();
       setFiles([]);
       form.setValue("postImage", "");
-      router.push(`/`);
-      router.refresh();
+      router.back();
 
-      if (res.message === "success") {
+      if (res?.success) {
         toast({
-          title: "Post created",
-          description: "Your post has been created successfully",
+          title: res.message,
         });
-      } else if (res.message === "swr") {
+      } else {
         toast({
-          title: "Something went wrong",
-          description: "Please try again",
-        });
-      } else if (res.message === "user-not-found") {
-        toast({
-          title: "User not found",
-          description: "Please try again",
-        });
-      } else if (res.message === "ids-not-found") {
-        toast({
-          title: "Ids not found",
-          description: "Please try again",
+          title: res?.message,
+          variant: "destructive",
         });
       }
     } catch (error) {
@@ -101,7 +124,15 @@ const CreatePostForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+          }
+        }}
+        className="space-y-8 mt-6"
+      >
         <FormField
           control={form.control}
           name="postImage"
@@ -118,15 +149,17 @@ const CreatePostForm = ({
             </FormItem>
           )}
         />
-
-        {/* Message Input Field */}
         <FormField
           control={form.control}
           name="message"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input className="rounded-2xl py-6" placeholder="Enter your message" {...field} />
+                <Input
+                  className="rounded-2xl py-6"
+                  placeholder="Enter your message"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -143,12 +176,16 @@ const CreatePostForm = ({
           {isUploading
             ? "Uploading image..."
             : form.formState.isSubmitting
-            ? "Creating post..."
-            : "Create Post"}
+            ? type === "create"
+              ? "Creating post..."
+              : "Updating post..."
+            : type === "create"
+            ? "Create Post"
+            : "Update Post"}
         </Button>
       </form>
     </Form>
   );
 };
 
-export default CreatePostForm;
+export default PostForm;

@@ -78,6 +78,11 @@ body {
   .dark .inv {
     @apply invert;
   }
+
+  .postCard:hover .showEditables {
+    opacity: 1;
+    pointer-events: all;
+  }
 }
 
 @layer utilities {
@@ -93,15 +98,16 @@ body {
   .wrapper {
     @apply mx-auto max-w-[1600px];
   }
-  .navbar {
-    min-height: 4rem;
-  }
-  .bg-blur {
-    backdrop-filter: blur(2rem);
-  }
   .sidebar-content {
     @apply w-full sticky;
-    height: calc(100vh - 6rem);
-    top: 5rem;
+    height: calc(100vh - 6rem - 1px);
+    top: calc(5rem + 1px);
+  }
+  .fade {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      hsl(var(--background)) 100%
+    );
   }
 }

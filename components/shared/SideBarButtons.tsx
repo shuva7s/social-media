@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 const SideBarButtons = () => {
   const pathName = usePathname();
+
   return (
     <ul className="w-full flex flex-col gap-2">
       {navlinks.map((link) => (
@@ -13,7 +14,8 @@ const SideBarButtons = () => {
           <Button
             asChild
             className={`w-full justify-start rounded-2xl text-muted-foreground ${
-              pathName === link.href
+              (link.href === "/" && pathName === "/") ||
+              (link.href !== "/" && pathName.includes(link.href))
                 ? "bg-primary py-7 text-white"
                 : "bg-transparent py-6 hover:text-white"
             }`}

@@ -77,38 +77,23 @@ const CommentButton = ({
         parentPost: parentPostId,
       });
 
-      if (res.message === "success") {
-        // Reset the form and the file input
-        form.reset(); // Reset the form after submission
-        setFiles([]); // Clear the files array
-        form.setValue("commentImage", ""); // Reset the commentImage field
-
-        router.refresh(); // Refresh the page
-
+      if (res.success) {
+        form.reset();
+        setFiles([]);
+        form.setValue("commentImage", "");
+        router.refresh();
         toast({
           title: "Comment added",
-          description: "Your comment has been added successfully",
+          description: "Your comment was added successfully",
         });
-
-        // return <DialogClose />;
-      } else if (res.message === "swr") {
+      } else {
         toast({
-          title: "Something went wrong",
-          description: "Please try again",
-        });
-      } else if (res.message === "user-not-found") {
-        toast({
-          title: "User not found",
-          description: "Please try again",
-        });
-      } else if (res.message === "ids-not-found") {
-        toast({
-          title: "Ids not found",
-          description: "Please try again",
+          title: "Error",
+          description: res.message,
+          variant: "destructive",
         });
       }
     } catch (error) {
-      handleError(error);
     }
   }
 

@@ -18,6 +18,7 @@ export interface PostData {
   updatedAt: string;
   __v: number;
   isLiked: boolean;
+  editable: boolean;
 }
 
 export interface IPost extends Document {

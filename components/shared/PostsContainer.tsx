@@ -7,7 +7,7 @@ const PostsContainer = async ({ type }: { type: "normal" | "users" }) => {
   const { posts, hasMore } = await getPosts(type);
   if (posts && posts.length > 0) {
     return (
-      <div className="columns-1 md:columns-2 xl:columns-3 space-y-2 gap-2 relative mb-32">
+      <div className="columns-1 md:columns-2 xl:columns-3 space-y-2 gap-2 relative">
         {posts.map((post: PostData) => (
           <PostCard key={post._id} post={post} />
         ))}

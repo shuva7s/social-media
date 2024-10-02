@@ -7,7 +7,7 @@ const CreatePostRedirect = () => {
   const pathName = usePathname();
   if (pathName !== "/create-post") {
     return (
-      <Button asChild>
+      <Button asChild className="max-sm:hidden">
         <Link href="/create-post">Create post</Link>
       </Button>
     );

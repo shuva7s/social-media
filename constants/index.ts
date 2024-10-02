@@ -1,4 +1,4 @@
-import { Home, Users, PlusCircle, Settings, User } from "lucide-react";
+import { Home, Users, PlusCircle, Settings, BellDot } from "lucide-react";
 let navlinks = [
   {
     name: "Home",
@@ -15,15 +15,16 @@ let navlinks = [
     icon: Users,
     href: "/communities",
   },
-  {
-    name: "Profile",
-    icon: User,
-    href: "/profile",
-  },
+
   {
     name: "Settings",
     icon: Settings,
     href: "/settings",
+  },
+  {
+    name: "Notifications",
+    icon: BellDot,
+    href: "/notifications",
   },
 ];
 
@@ -49,9 +50,9 @@ let bottomBarLinks = [
     icon: Settings,
   },
   {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
+    name: "Notifications",
+    icon: BellDot,
+    href: "/notifications",
   },
 ];
 

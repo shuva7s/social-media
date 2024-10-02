@@ -7,15 +7,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
-import { MessageSquareText } from "lucide-react";
-import { Button } from "../../ui/button";
 import { SignedIn } from "@clerk/nextjs";
 import { PostData } from "@/lib/database/models/post.model";
 import CommentButton from "@/components/action-buttons/CommentButton";
 
+
 const PostCard = ({ post }: { post: PostData }) => {
   return (
-    <Card className="border-border/50 shadow-none hover:border-border bg-background dark:bg-accent/30 break-inside-avoid">
+    <Card className="border-border/50 shadow-none hover:border-border bg-background dark:bg-accent/30 break-inside-avoid relative postCard">
       <CardHeader className="p-3 flex flex-row gap-3 flex-wrap">
         <Link href={`/${post.creator.username}`}>
           <Image
@@ -28,7 +27,7 @@ const PostCard = ({ post }: { post: PostData }) => {
         </Link>
         <Link href={`/${post.creator.username}`}>
           <p className="font-semibold text-muted-foreground hover:text-primary hover:underline transition-all break-inside-avoid">
-            @{post.creator.username}
+            {post.editable ? "You" : `@${post.creator.username}`}
           </p>
         </Link>
       </CardHeader>
@@ -54,7 +53,7 @@ const PostCard = ({ post }: { post: PostData }) => {
         <CardFooter className="px-3 py-2">
           <div className="flex flow-row gap-3">
             <Like isliked={post.isLiked} postId={post._id} />
-            <CommentButton parentPostId={post._id} type="create"/>
+            <CommentButton parentPostId={post._id} type="create" />
           </div>
         </CardFooter>
       </SignedIn>
