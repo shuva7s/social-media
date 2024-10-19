@@ -57,7 +57,7 @@ export async function createPost({
 }
 type UpdatePostParams = {
   postId: string;
-  username: string;
+  username?: string;
   message: string;
   postImage: string;
 };
@@ -111,9 +111,10 @@ export async function deletePost({ postId }: { postId: string }) {
       return { success: false, message: "Post not found" };
     }
 
+    // Check if the post has an image and delete it from uploadthing
     if (post.postImage !== "") {
       let oldImageKey = post.postImage.substring(18);
-      //remove
+      // Remove image from Uploadthing
       console.log("old image key", oldImageKey);
       try {
         const utapi = new UTApi();
@@ -126,12 +127,21 @@ export async function deletePost({ postId }: { postId: string }) {
       }
     }
 
-    // Delete the post from the database
+    // Delete all comments where the parentPost equals the postId
+    await Post.deleteMany({ parentPost: postId });
+
+    // Delete the post itself
     await Post.findByIdAndDelete(postId);
+
+    // Revalidate the page after deletion
     revalidatePath("/");
-    return { success: true, message: "Post deleted successfully" };
+
+    return {
+      success: true,
+      message: "Post and related comments deleted successfully",
+    };
   } catch (error) {
-    return { success: false, message: "Error deleting post" };
+    return { success: false, message: "Error deleting post and comments" };
   }
 }
 
@@ -160,7 +170,7 @@ export async function getPosts(type: "normal" | "users", page = 1) {
     };
 
     if (type === "users") {
-      query.creator = user._id; // Add creator condition only if type is "users"
+      query.creator = user._id;
     }
 
     const posts = await Post.find(query)
@@ -193,6 +203,7 @@ export async function getPosts(type: "normal" | "users", page = 1) {
       hasMore,
     };
   } catch (error) {
+    //TODO: error handling
     handleError(error);
     throw new Error("Unable to fetch posts");
   }
@@ -228,9 +239,11 @@ export async function getComments(postId: string, page = 1, limit = 6) {
         const isLiked = comment.likes.some(
           (like: Types.ObjectId) => like.toString() === user._id.toString()
         );
+        const editable = comment.creator._id.toString() === user._id.toString();
         return {
           ...comment,
           isLiked,
+          editable,
         };
       })
     );
@@ -243,7 +256,7 @@ export async function getComments(postId: string, page = 1, limit = 6) {
       hasMore,
     };
   } catch (error) {
-    console.error("Error fetching comments:", error);
+    //TODO: error handling
     throw new Error("Unable to fetch comments");
   }
 }

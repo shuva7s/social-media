@@ -2,11 +2,13 @@ import PostsContainerLoad from "@/components/loaders/PostsContainerLoad";
 import PostsContainer from "@/components/shared/PostsContainer";
 import { Button } from "@/components/ui/button";
 import {
+  RedirectToSignIn,
   SignedIn,
   SignedOut,
   SignInButton,
   SignOutButton,
 } from "@clerk/nextjs";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function rootPage() {
@@ -22,11 +24,11 @@ export default async function rootPage() {
       <SignedOut>
         <div className="min-h-screen flex flex-col gap-4 justify-center items-center">
           <p className="font-semibold text-3xl text-muted-foreground transition-all hover:text-primary">
-            You are missing out...!!
+            You are missing out...!
           </p>
-          <SignInButton>
-            <Button>Sign In</Button>
-          </SignInButton>
+          <Button>
+            <Link href="/sign-in">Sign in</Link>
+          </Button>
         </div>
       </SignedOut>
     </main>

@@ -7,8 +7,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
-import { MessageSquareText } from "lucide-react";
-import { Button } from "../../ui/button";
 import { PostData } from "@/lib/database/models/post.model";
 import CommentButton from "@/components/action-buttons/CommentButton";
 
@@ -46,6 +44,17 @@ const CommentCard = ({ comm }: { comm: PostData }) => {
       </CardContent>
 
       <div className="absolute z-10 right-3 top-3">
+        {comm.editable && (
+          // for update
+          <CommentButton
+            parentPostId={comm.parentPost as string}
+            type="update"
+            commId={comm._id}
+            commentMessage={comm.message}
+            commentPhoto={comm.postImage}
+          />
+        )}
+
         <Like isliked={comm.isLiked} postId={comm._id} />
       </div>
     </Card>

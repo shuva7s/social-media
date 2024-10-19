@@ -126,6 +126,7 @@ async function PostRenderer({ postIdString }: { postIdString: string }) {
   }
 }
 
+
 const PostDetailCard = ({ postIdString }: { postIdString: string }) => {
   return (
     <section className="w-full">

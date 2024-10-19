@@ -308,6 +308,7 @@ const CommunitiesRender = () => {
                     <p className="text-muted-foreground">
                       {community.description}
                     </p>
+                    {community.isPublic ? <p>Public</p> : <p>Private</p>}
                     <p className="text-muted-foreground text-sm">
                       Members: {community.members}
                     </p>

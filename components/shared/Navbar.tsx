@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import CreatePostRedirect from "../action-buttons/CreatePostRedirect";
+import Link from "next/link";
 
 const Navbar = () => {
   const userButtonAppearance = {
@@ -17,7 +18,7 @@ const Navbar = () => {
         </SignedIn>
         <SignedOut>
           <Button>
-            <SignInButton>Sign In</SignInButton>
+            <Link href="/sign-in">Sign in</Link>
           </Button>
         </SignedOut>
       </nav>

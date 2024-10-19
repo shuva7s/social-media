@@ -1,4 +1,5 @@
 import { model, models, Schema, Types } from "mongoose";
+import { join } from "path";
 
 export interface ICommunity extends Document {
   _id: Types.ObjectId;
@@ -9,8 +10,9 @@ export interface ICommunity extends Document {
     _id: Types.ObjectId;
     role: "admin" | "member";
   }>;
+  joinRequests: Types.ObjectId[];
   posts: Types.ObjectId[];
-  visibility: "public" | "private";
+  isPublic: boolean;
   createdAt: Date;
 }
 
@@ -20,6 +22,7 @@ export interface ICommunityFrontEnd {
   description: string;
   photo: string;
   members: number;
+  isPublic: boolean;
 }
 
 const communitySchema = new Schema({
@@ -32,8 +35,9 @@ const communitySchema = new Schema({
       role: { type: String, enum: ["admin", "member"], default: "member" },
     },
   ],
+  joinRequests: [{ type: Schema.Types.ObjectId, ref: "User" }],
   posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-  visibility: { type: String, enum: ["public", "private"], default: "public" },
+  isPublic: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
 });
 
