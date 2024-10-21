@@ -21,13 +21,11 @@ import { MessageSquareText, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Like from "@/components/action-buttons/Like";
 import PostDatailCardLoad from "@/components/loaders/PostDatailCardLoad";
-import DeletePostButton from "@/components/action-buttons/DeletePostButton";
-import CommentButton from "@/components/action-buttons/CommentButton";
-
+import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
+import Delete_post_comment_button from "@/components/action-buttons/Delete_post_comment_button";
 async function PostRenderer({ postIdString }: { postIdString: string }) {
   const res = await getPostById(postIdString);
   if (res.success) {
-    console.dir(res);
     return (
       <Card className="flex flex-col justify-between dark:bg-accent relative">
         <CardHeader className="px-4 py-3 bg-accent">
@@ -49,15 +47,21 @@ async function PostRenderer({ postIdString }: { postIdString: string }) {
           </div>
 
           {res.editable && (
-            <div className="flex flex-row gap-2 absolute right-3 top-2">
-              <Button asChild variant="ghost" size="icon" className="p-2.5">
-                <Link
-                  href={`/${res.postData.creator.username}/post/${res.postData._id}/edit`}
-                >
-                  <Pencil className="opacity-60" />
-                </Link>
-              </Button>
-              <DeletePostButton postId={res.postData._id} />
+            <div className="flex flex-row gap-2 absolute right-3 top-0 items-center bg-accent dark:shadow-lg p-1 rounded-md">
+              {/* update post button */}
+              <Create_Update_Post_Comment
+                isPost={true}
+                type="update"
+                previousId={postIdString}
+                previousPhoto={res.postData.postImage}
+                previousMessage={res.postData.message}
+                username={res.postData.creator.username}
+              />
+
+              <Delete_post_comment_button
+                postId={res.postData._id}
+                isPost={true}
+              />
             </div>
           )}
         </CardHeader>
@@ -111,7 +115,13 @@ async function PostRenderer({ postIdString }: { postIdString: string }) {
           <CardFooter className="px-3 py-2 sticky bottom-0 z-10">
             <div className="flex flow-row gap-3 p-0">
               <Like isliked={res.isLiked} postId={res.postData._id} />
-              <CommentButton parentPostId={res.postData._id} type="create" />
+
+              {/* create comment */}
+              <Create_Update_Post_Comment
+                isPost={false}
+                type="create"
+                parentPostId={res.postData._id}
+              />
             </div>
           </CardFooter>
         </SignedIn>
@@ -125,7 +135,6 @@ async function PostRenderer({ postIdString }: { postIdString: string }) {
     );
   }
 }
-
 
 const PostDetailCard = ({ postIdString }: { postIdString: string }) => {
   return (

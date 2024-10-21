@@ -9,8 +9,7 @@ import Link from "next/link";
 import Like from "../../action-buttons/Like";
 import { SignedIn } from "@clerk/nextjs";
 import { PostData } from "@/lib/database/models/post.model";
-import CommentButton from "@/components/action-buttons/CommentButton";
-
+import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 
 const PostCard = ({ post }: { post: PostData }) => {
   return (
@@ -53,7 +52,12 @@ const PostCard = ({ post }: { post: PostData }) => {
         <CardFooter className="px-3 py-2">
           <div className="flex flow-row gap-3">
             <Like isliked={post.isLiked} postId={post._id} />
-            <CommentButton parentPostId={post._id} type="create" />
+            {/* create comment */}
+            <Create_Update_Post_Comment
+              isPost={false}
+              type="create"
+              parentPostId={post._id}
+            />
           </div>
         </CardFooter>
       </SignedIn>

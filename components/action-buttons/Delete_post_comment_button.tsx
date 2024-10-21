@@ -16,19 +16,28 @@ import { deletePost } from "@/lib/actions/post.actions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-const DeletePostButton = ({ postId }: { postId: string }) => {
+const Delete_post_comment_button = ({
+  postId,
+  isPost,
+}: {
+  postId: string;
+  isPost: boolean;
+}) => {
   const router = useRouter();
   const { toast } = useToast();
 
   const handleDelete = async () => {
     try {
-      const res = await deletePost({ postId });
+      const res = await deletePost({ postId, isPost });
       if (res.success) {
         toast({
-          title: "Post deleted",
+          title: `${isPost ? "Post" : "Comment"} deleted`,
           description: res.message,
         });
-        router.back();
+
+        if (isPost) {
+          router.back();
+        }
       } else {
         toast({
           title: "Error",
@@ -49,7 +58,8 @@ const DeletePostButton = ({ postId }: { postId: string }) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently the post.
+            This action cannot be undone. This will permanently delete the{" "}
+            {isPost ? "post" : "comment"}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -61,4 +71,4 @@ const DeletePostButton = ({ postId }: { postId: string }) => {
   );
 };
 
-export default DeletePostButton;
+export default Delete_post_comment_button;

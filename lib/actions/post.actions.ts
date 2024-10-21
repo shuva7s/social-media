@@ -10,12 +10,14 @@ import { UTApi } from "uploadthing/server";
 import { revalidatePath } from "next/cache";
 
 type CreatePostParams = {
+  isPost: boolean;
   message: string;
   postImage: string;
   parentPost: string | null;
 };
 
 export async function createPost({
+  isPost = true,
   message,
   postImage,
   parentPost,
@@ -50,12 +52,16 @@ export async function createPost({
     });
 
     revalidatePath("/");
-    return { success: true, message: "Post created successfully" };
+    return {
+      success: true,
+      message: `${isPost ? "Post" : "Comment"} created successfully`,
+    };
   } catch (error) {
     return { success: false, message: "Something went wrong" };
   }
 }
 type UpdatePostParams = {
+  isPost: boolean;
   postId: string;
   username?: string;
   message: string;
@@ -63,6 +69,7 @@ type UpdatePostParams = {
 };
 
 export async function updatePost({
+  isPost = true,
   postId,
   username,
   message,
@@ -96,13 +103,22 @@ export async function updatePost({
     await post.save();
     revalidatePath("/");
     revalidatePath(`/${username}/post/${postId}`);
-    return { success: true, message: "Post updated successfully" };
+    return {
+      success: true,
+      message: `${isPost ? "Post" : "Comment"} updated successfully`,
+    };
   } catch (error) {
-    return { success: false, message: "Error updating post" };
+    return { success: false, message: "Something went wrong" };
   }
 }
 
-export async function deletePost({ postId }: { postId: string }) {
+export async function deletePost({
+  postId,
+  isPost,
+}: {
+  postId: string;
+  isPost: boolean;
+}) {
   try {
     await connectToDatabase();
 
@@ -138,7 +154,11 @@ export async function deletePost({ postId }: { postId: string }) {
 
     return {
       success: true,
-      message: "Post and related comments deleted successfully",
+      message: `${
+        isPost
+          ? "Post and the related comments deleted successfully"
+          : "Comment deleted successfully"
+      }`,
     };
   } catch (error) {
     return { success: false, message: "Error deleting post and comments" };
@@ -302,6 +322,7 @@ export async function updateLikeStatus(postId: string, isLiked: boolean) {
     }
 
     await post.save();
+    revalidatePath("/");
 
     return { success: true };
   } catch (error: any) {

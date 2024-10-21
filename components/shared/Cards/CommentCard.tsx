@@ -8,9 +8,17 @@ import Image from "next/image";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
 import { PostData } from "@/lib/database/models/post.model";
-import CommentButton from "@/components/action-buttons/CommentButton";
+import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
+import DeletePostButton from "@/components/action-buttons/Delete_post_comment_button";
+import Delete_post_comment_button from "@/components/action-buttons/Delete_post_comment_button";
 
-const CommentCard = ({ comm }: { comm: PostData }) => {
+const CommentCard = ({
+  comm,
+  postCreatorUsername,
+}: {
+  comm: PostData;
+  postCreatorUsername: string;
+}) => {
   return (
     <Card className="bg-accent/40 break-inside-avoid relative">
       <CardHeader className="p-3 flex flex-row gap-3 flex-wrap">
@@ -45,14 +53,19 @@ const CommentCard = ({ comm }: { comm: PostData }) => {
 
       <div className="absolute z-10 right-3 top-3">
         {comm.editable && (
-          // for update
-          <CommentButton
-            parentPostId={comm.parentPost as string}
-            type="update"
-            commId={comm._id}
-            commentMessage={comm.message}
-            commentPhoto={comm.postImage}
-          />
+          <>
+            {/* update comment */}
+            <Create_Update_Post_Comment
+              isPost={false}
+              type="update"
+              previousId={comm._id}
+              previousPhoto={comm.postImage}
+              previousMessage={comm.message}
+              parentPostId={comm.parentPost as string}
+              username={postCreatorUsername}
+            />
+            <Delete_post_comment_button postId={comm._id} isPost={false} />
+          </>
         )}
 
         <Like isliked={comm.isLiked} postId={comm._id} />

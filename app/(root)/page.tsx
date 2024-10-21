@@ -1,3 +1,4 @@
+import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 import PostsContainerLoad from "@/components/loaders/PostsContainerLoad";
 import PostsContainer from "@/components/shared/PostsContainer";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ export default async function rootPage() {
     <main className="min-h-screen flex-1 mb-32">
       <SignedIn>
         <section>
+          {/* create post button */}
+          <Create_Update_Post_Comment isPost={true} type="create" />
           <Suspense fallback={<PostsContainerLoad />}>
             <PostsContainer type="normal" />
           </Suspense>

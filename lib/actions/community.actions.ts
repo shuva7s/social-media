@@ -6,6 +6,7 @@ import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
 import { access } from "fs";
+import { revalidatePath } from "next/cache";
 
 interface communityDataProp {
   name: string;
@@ -62,6 +63,8 @@ export async function createCommunity({
 
     // Add the user as an admin in the members array
     newCom.members.push({ _id: user._id, role: "admin" });
+    user.communities.push({ _id: newCom._id, role: "admin" });
+
     await newCom.save();
 
     return {
@@ -123,65 +126,6 @@ export async function getCommunities(page = 1, searchParam = "", limit = 5) {
     };
   }
 }
-
-// export async function getCommunityById(communityId: string) {
-//   try {
-//     if (!Types.ObjectId.isValid(communityId)) {
-//       return { success: false, message: "Invalid community ID format" };
-//     }
-
-//     const { userId, userName, userMail } = await userInfo();
-//     if (!userId || !userMail || !userName) {
-//       return { success: false, message: "Error fetching your data" };
-//     }
-
-//     await connectToDatabase();
-
-//     const user = await User.findOne({
-//       email: userMail,
-//       username: userName,
-//       clerkId: userId,
-//     });
-
-//     if (!user) {
-//       return { success: false, message: "User not found" };
-//     }
-
-//     const community = await Community.findById(communityId).select(
-//       "_id name description photo members isPublic"
-//     );
-
-//     if (!community) {
-//       return { success: false, message: "Community not found" };
-//     }
-
-//     const membership = community.members.find((member: any) =>
-//       member._id.equals(user._id)
-//     );
-//     if (membership) {
-//       if (membership.role === "admin") {
-//         return {
-//           success: true,
-//           role: "admin",
-//           community: community,
-//         };
-//       } else {
-//         return { success: true, role: "member", community: community };
-//       }
-//     } else {
-//       return {
-//         success: true,
-//         role: "visitor",
-//         community: community,
-//       };
-//     }
-//   } catch (error: any) {
-//     return {
-//       success: false,
-//       message: "An error occurred while fetching the community",
-//     };
-//   }
-// }
 
 export async function getCommunityById(communityId: string) {
   try {
@@ -274,6 +218,47 @@ export async function getCommunityById(communityId: string) {
     return {
       success: false,
       message: "An error occurred while fetching the community",
+    };
+  }
+}
+
+export async function joinCommunity(communityId: string, isPublic: boolean) {
+  try {
+    const { userId, userName, userMail } = await userInfo();
+    if (!userId || !userMail || !userName) {
+      return { success: false, message: "Error fetching your data" };
+    }
+
+    await connectToDatabase();
+
+    const user = await User.findOne({
+      email: userMail,
+      username: userName,
+      clerkId: userId,
+    });
+
+    const community = await Community.findById(communityId);
+
+    if (!community) {
+      return { success: false, message: "Community not found" };
+    }
+
+    if (isPublic) {
+      community.members.push({ _id: user._id, role: "member" });
+      user.communities.push({ _id: community._id, role: "member" });
+    } else {
+      community.joinRequests.push(user._id);
+    }
+
+    await community.save();
+
+    revalidatePath(`/community/${communityId}`);
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: "An error occurred while joining the community",
     };
   }
 }

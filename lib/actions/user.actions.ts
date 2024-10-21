@@ -4,6 +4,7 @@ import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
 import { handleError } from "../utils";
+import Post from "../database/models/post.model";
 
 export type CreateUserParams = {
   clerkId: string;
@@ -59,6 +60,9 @@ export async function deleteUser(clerkId: string) {
       throw new Error("User deletion failed: USER NOT FOUND");
     }
     const deletedUser = await User.findByIdAndDelete(userToDelete._id);
+
+    //also delete all the posts created by the user
+    await Post.deleteMany({ creator: userToDelete._id });
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
   } catch (error: any) {

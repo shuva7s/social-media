@@ -5,8 +5,10 @@ import LoadMoreComments from "../loaders/LoadMoreComments";
 
 const CommentsContainer = async ({
   postIdString,
+  postCreatorUsername,
 }: {
   postIdString: string;
+  postCreatorUsername: string;
 }) => {
   const { comments, hasMore } = await getComments(postIdString);
   console.log("comments data");
@@ -15,7 +17,7 @@ const CommentsContainer = async ({
     return (
       <div className="flex flex-col gap-2">
         {comments.map((comm: PostData) => (
-          <CommentCard key={comm._id} comm={comm} />
+          <CommentCard key={comm._id} comm={comm} postCreatorUsername={postCreatorUsername}/>
         ))}
         {hasMore && <LoadMoreComments postIdString={postIdString} />}
       </div>

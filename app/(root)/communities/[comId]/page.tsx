@@ -29,9 +29,7 @@ async function CommunitAccessCheckerAndRenderer({
                 memberCount={res.community.membersCount}
               />
               <section className="w-full flex justify-center sm:justify-end p-4">
-                <Button asChild className="w-full sm:w-fit">
-                  <Link href="/create-post">Create community post</Link>
-                </Button>
+                {/* <CommentButton /> */}
               </section>
               <section className="min-h-[60vh]">
                 <p>Access to delete any post</p>
@@ -39,6 +37,26 @@ async function CommunitAccessCheckerAndRenderer({
                 <p>Manage members</p>
                 <p>Access to community settings</p>
 
+                <div className="h-44 text-xl font-bold">Posts</div>
+              </section>
+            </>
+          );
+        } else if (res.role === "creator") {
+          return (
+            <>
+              <CommunityHeader
+                image={res.community.photo}
+                name={res.community.name}
+                desc={res.community.description}
+                memberCount={res.community.membersCount}
+              />
+              <section className="w-full flex justify-center sm:justify-end p-4">
+                <Button asChild className="w-full sm:w-fit">
+                  <Link href="/create-post">Create community post</Link>
+                </Button>
+              </section>
+              <section className="min-h-[60vh]">
+                <div>Public Community - Creator</div>
                 <div className="h-44 text-xl font-bold">Posts</div>
               </section>
             </>
@@ -74,7 +92,8 @@ async function CommunitAccessCheckerAndRenderer({
               />
               <section className="w-full flex justify-center p-4">
                 <JoinCommunity
-                  communityId={res.community._id}
+                  communityId={res.community._id as string}
+                  communityName={res.community.name}
                   isPublic={res.community.isPublic}
                 />
               </section>
@@ -144,8 +163,9 @@ async function CommunitAccessCheckerAndRenderer({
               />
               <section className="min-h-[60vh] grid content-center">
                 <JoinCommunity
-                  communityId={res.community._id}
+                  communityId={res.community._id as string}
                   isPublic={res.community.isPublic}
+                  communityName={res.community.name}
                 />
               </section>
             </>
