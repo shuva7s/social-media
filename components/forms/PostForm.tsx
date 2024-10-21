@@ -92,9 +92,11 @@ const PostForm = ({
         res = await createPost({
           ...values,
           parentPost: null,
+          isPost: true,
         });
       } else if (type === "edit" && postId && username) {
         res = await updatePost({
+          isPost: true,
           postId,
           username,
           message: values.message,
