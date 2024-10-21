@@ -11,6 +11,11 @@ export interface PostData {
   creator: Creator;
   postImage: string;
   message: string;
+  community: {
+    isCommunityPost: boolean;
+    communityName: string;
+    communityId: string | null;
+  };
   likes: string[];
   comments: any[];
   parentPost: string | null;
@@ -28,6 +33,12 @@ export interface IPost extends Document {
   postImage: string;
   message: string;
 
+  community: {
+    isCommunityPost: boolean;
+    communityName: string;
+    communityId: Types.ObjectId | null;
+  };
+
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
 
@@ -42,6 +53,11 @@ export type postDataTypeFrontEnd = {
   creator: string;
   postImage: string;
   message: string;
+  community: {
+    isCommunityPost: boolean;
+    communityName: string;
+    communityId: string;
+  };
   likes: string[];
   comments: string[];
   parentPost: string;
@@ -53,6 +69,16 @@ const PostSchema = new Schema({
   creator: { type: Schema.Types.ObjectId, ref: "User" },
   postImage: { type: String, default: "" },
   message: { type: String, default: "" },
+
+  community: {
+    isCommunityPost: { type: Boolean, default: false },
+    communityName: { type: String, default: "" },
+    communityId: {
+      type: Schema.Types.ObjectId,
+      ref: "Community",
+      default: null,
+    },
+  },
 
   likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   comments: [{ type: Schema.Types.ObjectId, ref: "Post" }],
