@@ -5,7 +5,13 @@ import { PostData } from "@/lib/database/models/post.model";
 import { getComments } from "@/lib/actions/post.actions";
 import CommentCard from "../shared/Cards/CommentCard";
 
-const LoadMoreComments = ({ postIdString }: { postIdString: string }) => {
+const LoadMoreComments = ({
+  postIdString,
+  postCreatorUsername,
+}: {
+  postIdString: string;
+  postCreatorUsername: string;
+}) => {
   const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState<PostData[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -25,11 +31,15 @@ const LoadMoreComments = ({ postIdString }: { postIdString: string }) => {
     <>
       {comments.length > 0 &&
         comments.map((post: PostData) => (
-          <CommentCard key={post._id} comm={post} />
+          <CommentCard
+            key={post._id}
+            comm={post}
+            postCreatorUsername={postCreatorUsername}
+          />
         ))}
       {hasMore && (
         <Button
-        //   variant="outline"
+          //   variant="outline"
           className="w-full"
           onClick={handleLoadmore}
           disabled={loading}

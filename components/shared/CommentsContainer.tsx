@@ -19,7 +19,7 @@ const CommentsContainer = async ({
         {comments.map((comm: PostData) => (
           <CommentCard key={comm._id} comm={comm} postCreatorUsername={postCreatorUsername}/>
         ))}
-        {hasMore && <LoadMoreComments postIdString={postIdString} />}
+        {hasMore && <LoadMoreComments postIdString={postIdString} postCreatorUsername={postCreatorUsername}/>}
       </div>
     );
   } else {
