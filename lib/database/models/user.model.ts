@@ -9,10 +9,7 @@ export interface IUser extends Document {
   photo: string;
   firstName: string;
   lastName: string;
-  communities: Array<{
-    _id: Types.ObjectId;
-    role: "admin" | "member" | "editor";
-  }>;
+  communities: Types.ObjectId[];
   createdAt: Date;
 }
 
@@ -25,12 +22,9 @@ const UserSchema = new Schema({
   lastName: { type: String, default: "" },
   communities: [
     {
-      _id: { type: Schema.Types.ObjectId, ref: "Community", required: true },
-      role: {
-        type: String,
-        enum: ["admin", "member", "editor"],
-        default: "member",
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Community",
+      required: true,
     },
   ],
   createdAt: { type: Date, default: Date.now },

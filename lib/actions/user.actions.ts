@@ -5,6 +5,7 @@ import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
 import { handleError } from "../utils";
 import Post from "../database/models/post.model";
+import { revalidatePath } from "next/cache";
 
 export type CreateUserParams = {
   clerkId: string;
@@ -20,7 +21,6 @@ export async function createUser(user: CreateUserParams) {
     await connectToDatabase();
 
     const newUser = await User.create(user);
-
     return JSON.parse(JSON.stringify(newUser));
   } catch (error: any) {
     throw new Error("ERROR OCCURED AT CREATE_USER SERVER ACTION", error);

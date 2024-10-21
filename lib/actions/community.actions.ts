@@ -5,26 +5,24 @@ import Community from "../database/models/community.model";
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
-import { access } from "fs";
 import { revalidatePath } from "next/cache";
 
 interface communityDataProp {
   name: string;
   description: string;
   photo: string;
-  isPublic: boolean; // Added isPublic to the interface
+  isPublic: boolean;
 }
 
 export async function createCommunity({
   name,
   description,
   photo,
-  isPublic, // Include isPublic parameter
+  isPublic,
 }: communityDataProp) {
   try {
-    await connectToDatabase();
-
     const { userId, userName, userMail } = await userInfo();
+    await connectToDatabase();
 
     if (!userId || !userMail || !userName) {
       return {
@@ -60,12 +58,11 @@ export async function createCommunity({
         message: "Community not created",
       };
     }
-
-    // Add the user as an admin in the members array
     newCom.members.push({ _id: user._id, role: "admin" });
     user.communities.push({ _id: newCom._id, role: "admin" });
 
     await newCom.save();
+    await user.save();
 
     return {
       success: true,
@@ -224,6 +221,7 @@ export async function getCommunityById(communityId: string) {
 
 export async function joinCommunity(communityId: string, isPublic: boolean) {
   try {
+    console.log("join function called");
     const { userId, userName, userMail } = await userInfo();
     if (!userId || !userMail || !userName) {
       return { success: false, message: "Error fetching your data" };
@@ -243,14 +241,25 @@ export async function joinCommunity(communityId: string, isPublic: boolean) {
       return { success: false, message: "Community not found" };
     }
 
+    const isMember = community.members.some((member: any) =>
+      member._id.equals(user._id)
+    );
+    if (isMember) {
+      return {
+        success: false,
+        message: "You are already a member of this community",
+      };
+    }
+
     if (isPublic) {
       community.members.push({ _id: user._id, role: "member" });
-      user.communities.push({ _id: community._id, role: "member" });
+      user.communities.push(community._id);
     } else {
       community.joinRequests.push(user._id);
     }
 
     await community.save();
+    await user.save();
 
     revalidatePath(`/community/${communityId}`);
 
