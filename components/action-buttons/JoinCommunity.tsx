@@ -74,7 +74,7 @@ const JoinCommunity = ({
         <p className="text-xs text-muted-foreground">
           This community is private
         </p>
-        <Button onClick={handleOnClick}>
+        <Button onClick={handleOnClick} disabled={loading} className="gap-2">
           {loading ? (
             <>
               Sending join request <Loader2 className="w-4 h-4 animate-spin" />

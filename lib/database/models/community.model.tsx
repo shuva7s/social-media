@@ -8,7 +8,7 @@ export interface ICommunity extends Document {
   photo: string;
   members: Array<{
     _id: Types.ObjectId;
-    role: "admin" | "member";
+    role: "admin" | "member" | "editor";
   }>;
   joinRequests: Types.ObjectId[];
   posts: Types.ObjectId[];
@@ -32,7 +32,11 @@ const communitySchema = new Schema({
   members: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-      role: { type: String, enum: ["admin", "member", "editor"], default: "member" },
+      role: {
+        type: String,
+        enum: ["admin", "member", "editor"],
+        default: "member",
+      },
     },
   ],
   joinRequests: [{ type: Schema.Types.ObjectId, ref: "User" }],
