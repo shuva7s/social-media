@@ -11,6 +11,9 @@ import { revalidatePath } from "next/cache";
 
 type CreatePostParams = {
   isPost: boolean;
+  isCommunityPost?: boolean;
+  communityId?: string;
+  communityName?: string;
   message: string;
   postImage: string;
   parentPost: string | null;
@@ -18,6 +21,9 @@ type CreatePostParams = {
 
 export async function createPost({
   isPost = true,
+  isCommunityPost,
+  communityId,
+  communityName,
   message,
   postImage,
   parentPost,
@@ -50,6 +56,16 @@ export async function createPost({
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+
+    if (isCommunityPost) {
+      savedPost.community = {
+        isCommunityPost: true,
+        communityName: communityName!,
+        communityId: new Types.ObjectId(communityId!),
+      };
+    }
+
+    await savedPost.save();
 
     revalidatePath("/");
     return {
@@ -165,6 +181,70 @@ export async function deletePost({
   }
 }
 
+// export async function getPosts(type: "normal" | "users", page = 1) {
+//   try {
+//     await connectToDatabase();
+//     let limit = 6;
+//     const { userId, userName, userMail } = await userInfo();
+
+//     if (!userId || !userMail || !userName) {
+//       throw new Error("ids-not-found");
+//     }
+
+//     const user = await User.findOne({
+//       email: userMail,
+//       username: userName,
+//       clerkId: userId,
+//     });
+
+//     if (!user) {
+//       throw new Error("user-not-found");
+//     }
+
+//     let query: { parentPost: null; creator?: Types.ObjectId } = {
+//       parentPost: null,
+//     };
+
+//     if (type === "users") {
+//       query.creator = user._id;
+//     }
+
+//     const posts = await Post.find(query)
+//       .sort({ createdAt: -1 })
+//       .skip((page - 1) * limit)
+//       .limit(limit)
+//       .populate("creator", "username photo")
+//       .lean();
+
+//     const postsWithStatus = await Promise.all(
+//       posts.map(async (post) => {
+//         const isLiked = post.likes.some(
+//           (like: Types.ObjectId) => like.toString() === user._id.toString()
+//         );
+//         const editable = post.creator._id.toString() === user._id.toString();
+//         return {
+//           ...post,
+//           isLiked,
+//           editable,
+//         };
+//       })
+//     );
+
+//     const totalPosts = await Post.countDocuments(query);
+//     const hasMore = totalPosts > page * limit;
+
+//     return {
+//       posts: JSON.parse(JSON.stringify(postsWithStatus)),
+//       postsWithLikeStatus: JSON.parse(JSON.stringify(postsWithStatus)),
+//       hasMore,
+//     };
+//   } catch (error) {
+//     //TODO: error handling
+//     handleError(error);
+//     throw new Error("Unable to fetch posts");
+//   }
+// }
+
 export async function getPosts(type: "normal" | "users", page = 1) {
   try {
     await connectToDatabase();
@@ -193,12 +273,32 @@ export async function getPosts(type: "normal" | "users", page = 1) {
       query.creator = user._id;
     }
 
-    const posts = await Post.find(query)
+    // Fetch all posts matching the basic query
+    let posts = await Post.find(query)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .populate("creator", "username photo")
+      .populate({
+        path: "community.communityId",
+        select: "isPublic members", // Only fetch the community's privacy status and members
+      })
       .lean();
+
+    // Filter out posts from private communities where the user is not a member
+    posts = posts.filter((post) => {
+      if (post.community.isCommunityPost && post.community.communityId) {
+        const community = post.community.communityId;
+        if (!community.isPublic) {
+          // Check if the user is a member of the private community
+          const isMember = community.members.some(
+            (member: any) => member._id.toString() === user._id.toString()
+          );
+          return isMember; // Include post only if the user is a member
+        }
+      }
+      return true; // Include post if it's not a community post or if the community is public
+    });
 
     const postsWithStatus = await Promise.all(
       posts.map(async (post) => {
@@ -331,6 +431,53 @@ export async function updateLikeStatus(postId: string, isLiked: boolean) {
   }
 }
 
+// export async function getPostById(postId: string) {
+//   try {
+//     await connectToDatabase();
+//     const { userId, userName, userMail } = await userInfo();
+
+//     if (!userId || !userMail || !userName) {
+//       return { success: false, error: "Error fetching your data" };
+//     }
+
+//     const user = await User.findOne({
+//       email: userMail,
+//       username: userName,
+//       clerkId: userId,
+//     });
+
+//     if (!user) {
+//       return { success: false, error: "User not found" };
+//     }
+
+//     const postObjectId = new Types.ObjectId(postId);
+
+//     const post = await Post.findById(postObjectId).populate(
+//       "creator",
+//       "username photo"
+//     );
+
+//     if (!post) {
+//       return { success: false, error: "Post not found" };
+//     }
+
+//     const isLiked = post.likes.some(
+//       (like: Types.ObjectId) => like.toString() === user._id.toString()
+//     );
+
+//     const editable = post.creator._id.toString() === user._id.toString();
+
+//     return {
+//       success: true,
+//       postData: JSON.parse(JSON.stringify(post)),
+//       isLiked,
+//       editable,
+//     };
+//   } catch (error: any) {
+//     return { success: false, error: error.message };
+//   }
+// }
+
 export async function getPostById(postId: string) {
   try {
     await connectToDatabase();
@@ -352,13 +499,31 @@ export async function getPostById(postId: string) {
 
     const postObjectId = new Types.ObjectId(postId);
 
-    const post = await Post.findById(postObjectId).populate(
-      "creator",
-      "username photo"
-    );
+    // Populate the post with creator and community details
+    const post = await Post.findById(postObjectId)
+      .populate("creator", "username photo")
+      .populate({
+        path: "community.communityId",
+        select: "isPublic members", // Only fetch the community's privacy status and members
+      });
 
     if (!post) {
       return { success: false, error: "Post not found" };
+    }
+
+    // Check if the post is from a private community
+    if (post.community.isCommunityPost && post.community.communityId) {
+      const community = post.community.communityId;
+      if (!community.isPublic) {
+        // Check if the user is a member of the private community
+        const isMember = community.members.some(
+          (member: any) => member._id.toString() === user._id.toString()
+        );
+
+        if (!isMember) {
+          return { success: false, error: "Access denied to this post" };
+        }
+      }
     }
 
     const isLiked = post.likes.some(
@@ -378,38 +543,149 @@ export async function getPostById(postId: string) {
   }
 }
 
-export async function checkUserAccess({ postId }: { postId: string }) {
+// export async function checkUserAccessToPostFunction(postId: string) {
+//   try {
+//     await connectToDatabase();
+
+//     if (!Types.ObjectId.isValid(postId)) {
+//       return {
+//         success: false,
+//         message: "Invalid postId",
+//       };
+//     }
+
+//     const { userId, userName, userMail } = await userInfo();
+
+//     if (!userId || !userMail || !userName) {
+//       return { success: false, message: "Error fetching your data" };
+//     }
+
+//     const user = await User.findOne({
+//       clerkId: userId,
+//       email: userMail,
+//       username: userName,
+//     });
+
+//     if (!user) {
+//       return { success: false, message: "User not found" };
+//     }
+
+//     const post = await Post.findOne({ _id: postId, parentPost: null })
+//       .select("-comments")
+//       .populate("creator", "username photo")
+//       .populate({
+//         path: "community.communityId",
+//         select: "isPublic members",
+//       });
+
+//     if (!post) {
+//       return { success: false, message: "Post not found" };
+//     }
+
+//     if (post.community.isCommunityPost && post.community.communityId) {
+//       const community = post.community.communityId;
+
+//       if (!community.isPublic) {
+//         const isMember = community.members.some(
+//           (member: any) => member._id.toString() === user._id.toString()
+//         );
+
+//         if (!isMember) {
+//           return {
+//             success: false,
+//             message: "Access denied to this post",
+//           };
+//         }
+//       }
+//     }
+
+//     const isLiked = post.likes.some(
+//       (like: Types.ObjectId) => like.toString() === user._id.toString()
+//     );
+
+//     const editable = post.creator._id.toString() === user._id.toString();
+
+//     return {
+//       success: true,
+//       postData: JSON.parse(JSON.stringify(post)),
+//       isLiked,
+//       editable,
+//     };
+//   } catch (error: any) {
+//     return { success: false, message: error.message };
+//   }
+// }
+
+export async function checkUserAccessToPostFunction(postId: string) {
   try {
     await connectToDatabase();
 
-    const post = await Post.findById(postId);
-    if (!post)
+    if (!Types.ObjectId.isValid(postId)) {
       return {
         success: false,
-        message: "Post not found",
-      };
-
-    const { userId, userName, userMail } = await userInfo();
-    if (!userId || !userMail || !userName)
-      return { success: false, message: "Ids not found" };
-
-    const user = await User.findOne({
-      email: userMail,
-      username: userName,
-      clerkId: userId,
-    });
-
-    if (!user) return { success: false, message: "User not found" };
-
-    if (post.creator.toString() === user._id.toString()) {
-      return { success: true, message: "You have access to this post" };
-    } else {
-      return {
-        success: false,
-        message: "You do not have edit access to this post",
+        message: "Invalid postId",
       };
     }
-  } catch (error) {
-    return { success: false, message: "Error checking user access" };
+
+    const { userId, userName, userMail } = await userInfo();
+
+    if (!userId || !userMail || !userName) {
+      return { success: false, message: "Error fetching your data" };
+    }
+
+    const user = await User.findOne({
+      clerkId: userId,
+      email: userMail,
+      username: userName,
+    });
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    const post = await Post.findOne({ _id: postId, parentPost: null })
+      .select("-comments")
+      .populate("creator", "username photo")
+      .populate({
+        path: "community.communityId",
+        select: "isPublic members",
+      });
+
+    if (!post) {
+      return { success: false, message: "Post not found" };
+    }
+
+    if (post.community.isCommunityPost && post.community.communityId) {
+      const community = post.community.communityId;
+
+      if (!community.isPublic) {
+        const isMember = community.members.some(
+          (member: any) => member._id.toString() === user._id.toString()
+        );
+
+        if (!isMember) {
+          return {
+            success: false,
+            message: "Access denied to this post",
+          };
+        }
+      }
+    }
+
+    const isLiked = post.likes.some(
+      (like: Types.ObjectId) => like.toString() === user._id.toString()
+    );
+
+    const editable = post.creator?._id.toString() === user._id.toString();
+
+    return {
+      success: true,
+      postData: JSON.parse(JSON.stringify(post)), // Convert post to JSON
+      isLiked,
+      editable,
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message };
   }
 }
+

@@ -11,23 +11,33 @@ import { SignedIn } from "@clerk/nextjs";
 import { PostData } from "@/lib/database/models/post.model";
 import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 
-const PostCard = ({ post }: { post: PostData }) => {
+const PostCard = ({ post }: { post: any }) => {
+  console.dir(post);
   return (
     <Card className="border-border/50 shadow-none hover:border-border bg-background dark:bg-accent/30 break-inside-avoid relative postCard">
-      <CardHeader className="p-3 flex flex-row gap-3 flex-wrap">
-        <Link href={`/${post.creator.username}`}>
-          <Image
-            src={post.creator.photo}
-            alt="creator dp"
-            className="rounded-full"
-            width={40}
-            height={40}
-          />
-        </Link>
-        <Link href={`/${post.creator.username}`}>
-          <p className="font-semibold text-muted-foreground hover:text-primary hover:underline transition-all break-inside-avoid">
-            {post.editable ? "You" : `@${post.creator.username}`}
-          </p>
+      <CardHeader className="p-3 flex flex-row gap-3 flex-wrap items-center justify-between">
+        <div className="flex flow-row items-center gap-2">
+          <Link href={`/${post.creator.username}`}>
+            <Image
+              src={post.creator.photo}
+              alt="creator dp"
+              className="rounded-full"
+              width={40}
+              height={40}
+            />
+          </Link>
+          <Link href={`/${post.creator.username}`}>
+            <p className="font-semibold text-muted-foreground hover:text-primary hover:underline transition-all break-inside-avoid">
+              {post.editable ? "You" : `@${post.creator.username}`}
+            </p>
+          </Link>
+        </div>
+
+        <Link
+          className="text-sm text-primary/80 hover:text-primary transition-colors border border-primary rounded-full px-2 py-1 max-w-24 overflow-hidden whitespace-nowrap text-ellipsis"
+          href={`/communities/${post.community.communityId._id}`}
+        >
+          {post.community.communityName}
         </Link>
       </CardHeader>
       <CardContent className="px-2 py-0">
@@ -55,6 +65,7 @@ const PostCard = ({ post }: { post: PostData }) => {
             {/* create comment */}
             <Create_Update_Post_Comment
               isPost={false}
+              isCommunityPost={false}
               type="create"
               parentPostId={post._id}
             />

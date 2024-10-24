@@ -17,8 +17,6 @@ export default async function rootPage() {
     <main className="min-h-screen flex-1 mb-32">
       <SignedIn>
         <section>
-          {/* create post button */}
-          <Create_Update_Post_Comment isPost={true} type="create" />
           <Suspense fallback={<PostsContainerLoad />}>
             <PostsContainer type="normal" />
           </Suspense>

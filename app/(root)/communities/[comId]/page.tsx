@@ -2,11 +2,10 @@ import JoinCommunity from "@/components/action-buttons/JoinCommunity";
 import CommunityHeader from "@/components/shared/CommunityHeader";
 import { getCommunityById } from "@/lib/actions/community.actions";
 import { Suspense } from "react";
-import CreatePost from "../../create-post/page";
-import CreatePostRedirect from "@/components/action-buttons/CreatePostRedirect";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CommunityPageLoader from "@/components/loaders/CommunityPageLoader";
+import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 
 async function CommunitAccessCheckerAndRenderer({
   communityId,
@@ -29,9 +28,13 @@ async function CommunitAccessCheckerAndRenderer({
                 memberCount={res.community.membersCount}
               />
               <section className="w-full flex justify-center sm:justify-end p-4">
-                <Button asChild className="w-full sm:w-fit">
-                  <Link href="/create-post">Create community post</Link>
-                </Button>
+                <Create_Update_Post_Comment
+                  isPost={true}
+                  type="create"
+                  isCommunityPost={true}
+                  communityId={communityId}
+                  communityName={res.community.name}
+                />
               </section>
               <section className="min-h-[60vh]">
                 <p>Access to delete any post</p>
@@ -53,9 +56,13 @@ async function CommunitAccessCheckerAndRenderer({
                 memberCount={res.community.membersCount}
               />
               <section className="w-full flex justify-center sm:justify-end p-4">
-                <Button asChild className="w-full sm:w-fit">
-                  <Link href="/create-post">Create community post</Link>
-                </Button>
+                <Create_Update_Post_Comment
+                  isPost={true}
+                  type="create"
+                  isCommunityPost={true}
+                  communityId={communityId}
+                  communityName={res.community.name}
+                />
               </section>
               <section className="min-h-[60vh]">
                 <div>Public Community - Editor</div>
@@ -113,9 +120,13 @@ async function CommunitAccessCheckerAndRenderer({
                 memberCount={res.community.membersCount}
               />
               <section className="w-full flex justify-center sm:justify-end p-4">
-                <Button asChild className="w-full sm:w-fit">
-                  <Link href="/create-post">Create community post</Link>
-                </Button>
+                <Create_Update_Post_Comment
+                  isPost={true}
+                  type="create"
+                  isCommunityPost={true}
+                  communityId={communityId}
+                  communityName={res.community.name}
+                />
               </section>
               <section className="min-h-[60vh]">
                 <p>Access to delete any post</p>
@@ -138,9 +149,13 @@ async function CommunitAccessCheckerAndRenderer({
                 memberCount={res.community.membersCount}
               />
               <section className="w-full flex justify-center sm:justify-end p-4">
-                <Button asChild className="w-full sm:w-fit">
-                  <Link href="/create-post">Create community post</Link>
-                </Button>
+                <Create_Update_Post_Comment
+                  isPost={true}
+                  type="create"
+                  isCommunityPost={true}
+                  communityId={communityId}
+                  communityName={res.community.name}
+                />
               </section>
               <section className="min-h-[60vh]">
                 Editor

@@ -57,6 +57,7 @@ const CommentCard = ({
             {/* update comment */}
             <Create_Update_Post_Comment
               isPost={false}
+              isCommunityPost={false}
               type="update"
               previousId={comm._id}
               previousPhoto={comm.postImage}

@@ -50,7 +50,11 @@ export interface IPost extends Document {
 
 export type postDataTypeFrontEnd = {
   _id: string;
-  creator: string;
+  creator: {
+    _id: string;
+    username: string;
+    photo: string;
+  };
   postImage: string;
   message: string;
   community: {

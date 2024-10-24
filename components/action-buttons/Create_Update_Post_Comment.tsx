@@ -37,6 +37,11 @@ const formSchema = z.object({
 const Create_Update_Post_Comment = ({
   isPost = true,
   type,
+
+  isCommunityPost = false,
+  communityId,
+  communityName,
+
   previousId,
   previousPhoto = "",
   previousMessage = "",
@@ -44,12 +49,15 @@ const Create_Update_Post_Comment = ({
   username,
 }: {
   isPost: boolean;
+  isCommunityPost: boolean;
+  communityId?: string;
+  communityName?: string;
   type: "create" | "update";
   previousId?: string;
   previousPhoto?: string;
   previousMessage?: string;
-  parentPostId?: string; // it is only for comments
-  username?: string; // After update to revalidate the post path we will use this
+  parentPostId?: string;
+  username?: string;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -66,7 +74,6 @@ const Create_Update_Post_Comment = ({
   });
 
   useEffect(() => {
-    // Reset form when previousPhoto or previousMessage changes
     form.reset({
       imageField: previousPhoto || "",
       textField: previousMessage || "",
@@ -91,25 +98,50 @@ const Create_Update_Post_Comment = ({
       let response;
 
       if (isPost) {
-        if (type === "create") {
-          // Create post
-          response = await createPost({
-            isPost: true,
-            message: values.textField,
-            postImage: values.imageField,
-            parentPost: null,
-          });
-        } else if (type === "update" && previousId && username) {
-          // Update post
-          response = await updatePost({
-            isPost: true,
-            postId: previousId,
-            username,
-            message: values.textField,
-            postImage: values.imageField,
-          });
+        if (isCommunityPost) {
+          if (type === "create") {
+            // Create community post
+            response = await createPost({
+              isPost: true,
+              isCommunityPost: true,
+              communityId,
+              communityName,
+              message: values.textField,
+              postImage: values.imageField,
+              parentPost: null,
+            });
+          } else if (type === "update" && previousId && username) {
+            // Update community post
+            response = await updatePost({
+              isPost: true,
+              postId: previousId,
+              username,
+              message: values.textField,
+              postImage: values.imageField,
+            });
+          }
+        } else {
+          if (type === "create") {
+            // Create normal post
+            response = await createPost({
+              isPost: true,
+              message: values.textField,
+              postImage: values.imageField,
+              parentPost: null,
+            });
+          } else if (type === "update" && previousId && username) {
+            // Update normal post
+            response = await updatePost({
+              isPost: true,
+              postId: previousId,
+              username,
+              message: values.textField,
+              postImage: values.imageField,
+            });
+          }
         }
       } else {
+        // comment
         if (type === "create" && parentPostId) {
           // Create comment
           response = await createPost({

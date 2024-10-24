@@ -11,8 +11,8 @@ const CommentsContainer = async ({
   postCreatorUsername: string;
 }) => {
   const { comments, hasMore } = await getComments(postIdString);
-  console.log("comments data");
-  console.dir(comments);
+  // console.log("comments data");
+  // console.dir(comments);
   if (comments && comments.length > 0) {
     return (
       <div className="flex flex-col gap-2">
