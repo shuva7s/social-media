@@ -55,6 +55,8 @@ export async function createPost({
     return {
       success: true,
       message: `${parentPostId ? "Comment" : "Post"} created successfully`,
+      userName: user.username,
+      postId: savedPost._id,
     };
   } catch (error) {
     return { success: false, message: "Something went wrong" };
@@ -146,8 +148,9 @@ export async function deletePost({
     // Delete the post itself
     await Post.findByIdAndDelete(postId);
 
-    // Revalidate the page after deletion
-    revalidatePath("/");
+    if (isPost) {
+      revalidatePath("/");
+    }
 
     return {
       success: true,

@@ -36,7 +36,7 @@ const Delete_post_comment_button = ({
         });
 
         if (isPost) {
-          router.back();
+          router.replace("/");
         }
       } else {
         toast({

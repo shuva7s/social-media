@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -70,6 +70,7 @@ const PostForm = () => {
         toast({
           title: res.message,
         });
+        router.push(`/${res.userName}/post/${res.postId}`);
       } else {
         toast({
           title: res?.message,
