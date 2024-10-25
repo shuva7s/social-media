@@ -35,28 +35,18 @@ const formSchema = z.object({
 });
 
 const Create_Update_Post_Comment = ({
-  isPost = true,
   type,
-
-  isCommunityPost = false,
-  communityId,
-  communityName,
-
-  previousId,
+  postId,
   previousPhoto = "",
   previousMessage = "",
   parentPostId,
   username,
 }: {
-  isPost: boolean;
-  isCommunityPost: boolean;
-  communityId?: string;
-  communityName?: string;
   type: "create" | "update";
-  previousId?: string;
+  postId?: string;
   previousPhoto?: string;
   previousMessage?: string;
-  parentPostId?: string;
+  parentPostId: string | null;
   username?: string;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
@@ -94,110 +84,68 @@ const Create_Update_Post_Comment = ({
       setIsUploading(false);
     }
 
-    try {
-      let response;
+    let response;
 
-      if (isPost) {
-        if (isCommunityPost) {
-          if (type === "create") {
-            // Create community post
-            response = await createPost({
-              isPost: true,
-              isCommunityPost: true,
-              communityId,
-              communityName,
-              message: values.textField,
-              postImage: values.imageField,
-              parentPost: null,
-            });
-          } else if (type === "update" && previousId && username) {
-            // Update community post
-            response = await updatePost({
-              isPost: true,
-              postId: previousId,
-              username,
-              message: values.textField,
-              postImage: values.imageField,
-            });
-          }
-        } else {
-          if (type === "create") {
-            // Create normal post
-            response = await createPost({
-              isPost: true,
-              message: values.textField,
-              postImage: values.imageField,
-              parentPost: null,
-            });
-          } else if (type === "update" && previousId && username) {
-            // Update normal post
-            response = await updatePost({
-              isPost: true,
-              postId: previousId,
-              username,
-              message: values.textField,
-              postImage: values.imageField,
-            });
-          }
-        }
-      } else {
-        // comment
-        if (type === "create" && parentPostId) {
-          // Create comment
-          response = await createPost({
-            isPost: false,
-            message: values.textField,
-            postImage: values.imageField,
-            parentPost: parentPostId,
-          });
-        } else if (type === "update" && previousId && username) {
-          // Update comment
-          response = await updatePost({
-            isPost: false,
-            postId: previousId,
-            username,
-            message: values.textField,
-            postImage: values.imageField,
-          });
-        }
-      }
-
-      if (response?.success) {
-        toast({
-          title: `${isPost ? "Post" : "Comment"} ${
-            type === "create" ? "Created" : "Updated"
-          }`,
-          description: response.message,
+    if (type === "create") {
+      if (!parentPostId) {
+        response = await createPost({
+          message: values.textField,
+          postImage: values.imageField,
+          parentPost: null,
         });
-        form.reset(); // Reset form after successful update or creation
-        router.refresh();
       } else {
-        toast({
-          title: "Error",
-          description: response!.message,
-          variant: "destructive",
+        response = await createPost({
+          message: values.textField,
+          postImage: values.imageField,
+          parentPost: parentPostId,
         });
       }
-    } catch (error: any) {
+    } else if (postId) {
+      if (!parentPostId) {
+        response = await updatePost({
+          postId: postId,
+          username: username,
+          message: values.textField,
+          postImage: values.imageField,
+        });
+      } else {
+        response = await updatePost({
+          postId: postId,
+          username: username,
+          message: values.textField,
+          postImage: values.imageField,
+        });
+      }
+    }
+
+    if (response?.success) {
       toast({
-        title: "No response",
-        description: error.message,
-        variant: "destructive",
+        title: "Success",
+        description: response.message,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: response?.message,
       });
     }
+
+    form.reset();
+
+    setFiles([]);
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant={isPost && type === "create" ? "default" : "ghost"}
+          variant={!parentPostId && type === "create" ? "default" : "ghost"}
           size={type === "update" ? "icon" : "default"}
           className={`opacity-60 gap-2 ${type === "update" && "p-2.5"} ${
-            isPost && type === "create" && "opacity-100"
+            !parentPostId && type === "create" && "opacity-100"
           }`}
         >
-          {isPost ? (
+          {!parentPostId ? (
             type === "create" ? (
               "Create Post"
             ) : (
@@ -217,7 +165,7 @@ const Create_Update_Post_Comment = ({
         <DialogHeader>
           <DialogTitle>
             {type === "create" ? "Create" : "Update"}
-            {isPost ? " Post" : " Comment"}
+            {!parentPostId ? " Post" : " Comment"}
           </DialogTitle>
           <DialogDescription>Some description</DialogDescription>
         </DialogHeader>

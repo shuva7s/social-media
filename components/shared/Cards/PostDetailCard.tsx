@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/ImageDialog";
-import { getPostById } from "@/lib/actions/post.actions";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -21,19 +20,16 @@ import Like from "@/components/action-buttons/Like";
 import PostDatailCardLoad from "@/components/loaders/PostDatailCardLoad";
 import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 import Delete_post_comment_button from "@/components/action-buttons/Delete_post_comment_button";
-import { postDataTypeFrontEnd } from "@/lib/database/models/post.model";
+
 const PostDetailCard = ({
   post,
   isLiked,
   editable,
 }: {
-  post: postDataTypeFrontEnd;
+  post: any;
   isLiked: boolean;
   editable: boolean;
 }) => {
-  console.dir(post);
-  console.dir(isLiked);
-  console.dir(editable);
   return (
     <section className="w-full">
       <div className="bg-accent rounded-md">
@@ -59,26 +55,20 @@ const PostDetailCard = ({
             {editable && (
               <div className="flex flex-row gap-2 absolute right-3 top-0 items-center bg-accent dark:shadow-lg p-1 rounded-md">
                 <Create_Update_Post_Comment
-                  isPost={true}
-                  isCommunityPost={false}
                   type="update"
-                  previousId={post._id}
+                  postId={post._id}
                   previousPhoto={post.postImage}
                   previousMessage={post.message}
+                  parentPostId={null}
                   username={post.creator.username}
                 />
 
-                <Delete_post_comment_button
-                  postId={post._id}
-                  isPost={true}
-                />
+                <Delete_post_comment_button postId={post._id} isPost={true} />
               </div>
             )}
           </CardHeader>
           <CardContent className="px-4 py-0 my-2">
-            {post.message !== "" && (
-              <p className="">{post.message}</p>
-            )}
+            {post.message !== "" && <p className="">{post.message}</p>}
             {post.postImage !== "" && (
               <Dialog>
                 <DialogTrigger className="max-h-[65vh] w-full overflow-hidden">
@@ -127,8 +117,6 @@ const PostDetailCard = ({
                 <Like isliked={isLiked} postId={post._id} />
 
                 <Create_Update_Post_Comment
-                  isPost={false}
-                  isCommunityPost={false}
                   type="create"
                   parentPostId={post._id}
                 />

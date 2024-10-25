@@ -1,4 +1,3 @@
-import Communities from "@/app/(root)/communities/page";
 import { Schema, model, models, Document, Types } from "mongoose";
 
 export interface IUser extends Document {
@@ -9,7 +8,6 @@ export interface IUser extends Document {
   photo: string;
   firstName: string;
   lastName: string;
-  communities: Types.ObjectId[];
   createdAt: Date;
 }
 
@@ -20,13 +18,6 @@ const UserSchema = new Schema({
   photo: { type: String, required: true },
   firstName: { type: String, default: "" },
   lastName: { type: String, default: "" },
-  communities: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Community",
-      required: true,
-    },
-  ],
   createdAt: { type: Date, default: Date.now },
 });
 

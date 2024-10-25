@@ -8,11 +8,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
 import { SignedIn } from "@clerk/nextjs";
-import { PostData } from "@/lib/database/models/post.model";
 import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 
 const PostCard = ({ post }: { post: any }) => {
-  console.dir(post);
   return (
     <Card className="border-border/50 shadow-none hover:border-border bg-background dark:bg-accent/30 break-inside-avoid relative postCard">
       <CardHeader className="p-3 flex flex-row gap-3 flex-wrap items-center justify-between">
@@ -33,12 +31,14 @@ const PostCard = ({ post }: { post: any }) => {
           </Link>
         </div>
 
-        <Link
-          className="text-sm text-primary/80 hover:text-primary transition-colors border border-primary rounded-full px-2 py-1 max-w-24 overflow-hidden whitespace-nowrap text-ellipsis"
-          href={`/communities/${post.community.communityId._id}`}
-        >
-          {post.community.communityName}
-        </Link>
+        {post.communityId && (
+          <Link
+            className="text-sm text-primary/80 hover:text-primary transition-colors border border-primary rounded-full px-2 py-1 max-w-24 overflow-hidden whitespace-nowrap text-ellipsis"
+            href={`/communities/${post.communityId._id}`}
+          >
+            {post.communityId.name}
+          </Link>
+        )}
       </CardHeader>
       <CardContent className="px-2 py-0">
         <Link
@@ -62,10 +62,7 @@ const PostCard = ({ post }: { post: any }) => {
         <CardFooter className="px-3 py-2">
           <div className="flex flow-row gap-3">
             <Like isliked={post.isLiked} postId={post._id} />
-            {/* create comment */}
             <Create_Update_Post_Comment
-              isPost={false}
-              isCommunityPost={false}
               type="create"
               parentPostId={post._id}
             />

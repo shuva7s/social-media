@@ -13,11 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  createPost,
-  getPostById,
-  updatePost,
-} from "@/lib/actions/post.actions";
+import { createPost, updatePost } from "@/lib/actions/post.actions";
 import { useRouter } from "next/navigation";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileUploader } from "../shared/FileUploader";
@@ -29,17 +25,9 @@ const formSchema = z.object({
   message: z.string(),
 });
 
-const PostForm = ({
-  type,
-  postId,
-  username,
-}: {
-  type: "create" | "edit";
-  postId?: string;
-  username?: string;
-}) => {
+const PostForm = () => {
   const [files, setFiles] = useState<File[]>([]); // Manage file state
-  const [isUploading, setIsUploading] = useState(false); // Track image upload progress
+  const [processing, setProcessing] = useState(false); // Track image upload progress
   const { startUpload } = useUploadThing("imageUploader");
 
   const { toast } = useToast();
@@ -53,59 +41,29 @@ const PostForm = ({
     },
   });
 
-  // Fetch post data if type is "edit"
-  useEffect(() => {
-    if (type === "edit" && postId) {
-      (async () => {
-        try {
-          const response = await getPostById(postId);
-          if (response.success && response.postData) {
-            form.reset({
-              postImage: response.postData.postImage || "",
-              message: response.postData.message || "",
-            });
-          }
-        } catch (error) {
-          handleError(error);
-        }
-      })();
-    }
-  }, [type, postId, form]);
-
   // Submit handler
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (files.length > 0) {
-      setIsUploading(true); // Start the image upload process
+      setProcessing(true); // Start the image upload process
       const uploadedImages = await startUpload(files);
       if (!uploadedImages) {
-        setIsUploading(false);
+        setProcessing(false);
         return;
       }
       // Update values.postImage with the uploaded image URL
       values.postImage = uploadedImages[0].url;
-      setIsUploading(false); // Upload completed
+      setProcessing(false); // Upload completed
     }
 
     try {
-      let res;
-      if (type === "create") {
-        res = await createPost({
-          ...values,
-          parentPost: null,
-          isPost: true,
-        });
-      } else if (type === "edit" && postId && username) {
-        res = await updatePost({
-          isPost: true,
-          postId,
-          username,
-          message: values.message,
-          postImage: values.postImage,
-        });
-      }
+      let res = await createPost({
+        ...values,
+        parentPost: null,
+      });
 
       form.reset();
       setFiles([]);
+
       form.setValue("postImage", "");
       router.back();
 
@@ -145,6 +103,7 @@ const PostForm = ({
                   onFieldChange={field.onChange}
                   imageUrl={field.value || ""}
                   setFiles={setFiles}
+                  disabled={processing || form.formState.isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -161,6 +120,7 @@ const PostForm = ({
                   className="rounded-2xl py-6"
                   placeholder="Enter your message"
                   {...field}
+                  disabled={processing || form.formState.isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -168,22 +128,13 @@ const PostForm = ({
           )}
         />
 
-        {/* Submit Button */}
         <Button
           type="submit"
           size="lg"
           disabled={!form.formState.isDirty || form.formState.isSubmitting}
           className="button col-span-2 w-full py-6 rounded-2xl"
         >
-          {isUploading
-            ? "Uploading image..."
-            : form.formState.isSubmitting
-            ? type === "create"
-              ? "Creating post..."
-              : "Updating post..."
-            : type === "create"
-            ? "Create Post"
-            : "Update Post"}
+          {processing || form.formState.isSubmitting ? "Processing..." : "Post"}
         </Button>
       </form>
     </Form>

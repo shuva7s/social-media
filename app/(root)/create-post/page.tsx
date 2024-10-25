@@ -3,9 +3,7 @@ import { PostFormLoad } from "@/components/loaders/PostFormLoad";
 import { Suspense } from "react";
 
 async function RenderForm() {
-  // let creatorObjId = await getUserObjectId();
-  return <PostForm type="create"/>;
-  // <CreatePostForm creatorObjId={creatorObjId} parentPost={null} />;
+  return <PostForm />;
 }
 export default function CreatePost() {
   return (

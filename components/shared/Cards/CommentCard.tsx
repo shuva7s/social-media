@@ -7,7 +7,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import Like from "../../action-buttons/Like";
-import { PostData } from "@/lib/database/models/post.model";
 import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 import DeletePostButton from "@/components/action-buttons/Delete_post_comment_button";
 import Delete_post_comment_button from "@/components/action-buttons/Delete_post_comment_button";
@@ -16,7 +15,7 @@ const CommentCard = ({
   comm,
   postCreatorUsername,
 }: {
-  comm: PostData;
+  comm: any;
   postCreatorUsername: string;
 }) => {
   return (
@@ -56,14 +55,11 @@ const CommentCard = ({
           <>
             {/* update comment */}
             <Create_Update_Post_Comment
-              isPost={false}
-              isCommunityPost={false}
               type="update"
-              previousId={comm._id}
+              postId={comm._id}
               previousPhoto={comm.postImage}
               previousMessage={comm.message}
-              parentPostId={comm.parentPost as string}
-              username={postCreatorUsername}
+              parentPostId={comm.parentPost}
             />
             <Delete_post_comment_button postId={comm._id} isPost={false} />
           </>

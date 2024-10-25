@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { PostData } from "@/lib/database/models/post.model";
 import { getComments } from "@/lib/actions/post.actions";
 import CommentCard from "../shared/Cards/CommentCard";
 
@@ -13,7 +12,7 @@ const LoadMoreComments = ({
   postCreatorUsername: string;
 }) => {
   const [loading, setLoading] = useState(false);
-  const [comments, setComments] = useState<PostData[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(2);
 
@@ -30,7 +29,7 @@ const LoadMoreComments = ({
   return (
     <>
       {comments.length > 0 &&
-        comments.map((post: PostData) => (
+        comments.map((post: any) => (
           <CommentCard
             key={post._id}
             comm={post}

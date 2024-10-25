@@ -1,5 +1,4 @@
 import CommentsLoader from "@/components/loaders/CommentsLoader";
-import PostDatailCardLoad from "@/components/loaders/PostDatailCardLoad";
 import PostPageLoad from "@/components/loaders/PostPageLoad";
 import PostDetailCard from "@/components/shared/Cards/PostDetailCard";
 import CommentsContainer from "@/components/shared/CommentsContainer";
@@ -51,7 +50,6 @@ export default function SpecificPost({
 }) {
   return (
     <main className="flex-1 mb-20">
-      {/* <Suspense fallback={<PostDatailCardLoad />}> */}
       <Suspense fallback={<PostPageLoad />}>
         <CheckUserAccessToPostAndRender
           postId={params.postId}

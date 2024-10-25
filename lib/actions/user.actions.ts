@@ -5,7 +5,6 @@ import { connectToDatabase } from "../database/mongoose";
 import { userInfo } from "./userInfo.action";
 import { handleError } from "../utils";
 import Post from "../database/models/post.model";
-import { revalidatePath } from "next/cache";
 
 export type CreateUserParams = {
   clerkId: string;

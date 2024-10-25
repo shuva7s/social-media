@@ -1,14 +1,7 @@
-import Create_Update_Post_Comment from "@/components/action-buttons/Create_Update_Post_Comment";
 import PostsContainerLoad from "@/components/loaders/PostsContainerLoad";
 import PostsContainer from "@/components/shared/PostsContainer";
 import { Button } from "@/components/ui/button";
-import {
-  RedirectToSignIn,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import { Suspense } from "react";
 
