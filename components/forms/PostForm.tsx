@@ -65,7 +65,6 @@ const PostForm = () => {
       setFiles([]);
 
       form.setValue("postImage", "");
-      router.back();
 
       if (res?.success) {
         toast({
